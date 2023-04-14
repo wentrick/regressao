@@ -78,6 +78,20 @@ coeficiente_variacao_beta_0 = s_beta_0/beta_0 #variancia maior pois incorpara a 
 
 
 
+#estimando intervalo de confianca para beta 1 com 95% de confianca 
+alfa = 0.95
+
+ic_beta_1  = c(beta_1+qt((1-0.95)/2, n-2)*s_beta_1,beta_1-qt((1-0.95)/2, n-2)*s_beta_1)
+
+#estimando intervalo de confianca para beta 0 com 95% de confianca 
+alfa = 0.95
+
+ic_beta_0  = c(beta_0+qt((1-0.95)/2, n-2)*s_beta_0,beta_0-qt((1-0.95)/2, n-2)*s_beta_0)
+
+#teste de hipotese sobre beta 1
+
+
+
 
 
 

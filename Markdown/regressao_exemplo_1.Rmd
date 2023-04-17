@@ -1,0 +1,98 @@
+---
+title: "Análise de Regressão"
+author: "Davi Wentrick Feijó"
+date: "2023-04-17"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(tidyverse,knitr)
+```
+
+#### Exemplo 1 
+
+A taxa de metabolismo é importante em estudos sobre aumento de peso, dieta e exercício. Em um estudo com 19 indivíduos selecionados aleatoriamente entre os submetidos a um estudo de dieta, foram coletados dados sobre a massa do corpo sem gordura e a taxa metabólica em repouso. A massa do corpo sem gordura é o peso da pessoa, eliminada toda a gordura, e é dada em quilogramas. A taxa de metabolismo é medida em calorias queimadas a cada 24 horas e os pesquisadores acham que a massa do corpo sem gordura tem grande influência sobre ela.
+
+```{r include=FALSE}
+#exercicios de regressao onde x é a massa sem gordura e y é a taxa do metabolismo
+
+massa = c(62.0,62.9,36.1,54.6,48.5,42.0,47.4,50.6,42.0,48.7,40.3,33.1,51.9,42.4,34.5,51.1,41.2,51.9,46.9)
+taxa = c(1792,1666,995,1425,1396,1418,1362,1502,1256,1614,1189,913,1460,1124,1052,1347,1204,1867,1439)
+
+n = length(massa)
+
+dados = data.frame(massa,taxa)
+```
+
+```{r echo=FALSE}
+kable(dados)
+```
+
+##### Calcule o estimadores abaixo manualmente (com arredondamentos):
+
+
+$$
+\hat{\beta_1} = \frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2}
+$$
+$$
+\hat{\beta_0} = \bar{Y} - \hat{\beta_1}\bar{X}
+$$
+Os valores encontrados em sala foram os seguintes:
+
+
+$$
+\hat{\beta_0} = 117.44 
+$$
+$$
+\hat{\beta_1} = 26.79
+$$
+
+Com os coeficientes obtidos a nossa equacao ficou assim:
+
+$$
+\hat{Y} = 117.44 + 26.79x_{}
+$$
+Aplicando a equacao encontrada nos dados podemos obter o valor estimado (sabendo que x = massa)
+```{r include=FALSE}
+#vamos calcular o beta 0  e beta 1 manualmente com arredondamentos
+#valores encontrados em sala
+
+dados = dados %>%
+  mutate(estimado = 117.44 +26.79*massa,
+         residuo = taxa - estimado,
+         taxa_quadrado = taxa**2,
+         massa_quadrado = massa**2,
+         massa_x_taxa = massa*taxa)
+
+sum(dados$residuo)
+```
+
+```{r echo=FALSE}
+kable(dados[1:3])
+```
+
+\newpage
+
+Para verificar se esse valor estimado está condizente podemos calcular os residuos e soma-los, devemos encontrar que a soma dos reisudos é 0. Dado que a forma de se calcular os residuos segue essa funcao:
+
+$$
+e_i = y_i - \hat{y_i}
+$$
+
+
+onde e_i é o resíduo para a i-ésima observação, $y_i$ é o valor observado da variável dependente para a i-ésima observação e $\hat{Y_i}$ é o valor previsto pela reta de regressão para a i-ésima observação.
+
+```{r echo=FALSE}
+kable(dados[1:4])
+```
+
+
+
+
+
+
+
+
+
+

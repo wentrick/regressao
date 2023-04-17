@@ -143,7 +143,7 @@ cat("Intervalo de confiança para a média de Y quando X =", x_escolhido, ": [",
 
 t_value <- qt(0.975, n - 2,lower.tail = TRUE) # Valor crítico da distribuição t-Student para o nível de confiança de 95% e n-2 graus de liberdade
 y_new_hat <- beta_0 + beta_1*x_escolhido # Estimativa pontual da média de Y para o valor de X escolhido
-ic_lower <- y_new_hat - t_value*sigma*sqrt((1/n)+(x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
-ic_upper <- y_new_hat + t_value*sigma*sqrt(((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2))) # Limite superior do intervalo de confiança
+ic_lower <- y_new_hat - t_value*sigma*sqrt((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + t_value*sigma*sqrt((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
 #arrumar os parenteses da equacao
 cat("Intervalo de confiança para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")

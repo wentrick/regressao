@@ -42,11 +42,10 @@ Os valores encontrados em sala foram os seguintes:
 
 
 $$
-\hat{\beta_0} = 117.44 
+\hat{\beta_0} = 117.44 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \hat{\beta_1} = 26.79
 $$
-$$
-\hat{\beta_1} = 26.79
-$$
+
+\newpage
 
 Com os coeficientes obtidos a nossa equacao ficou assim:
 
@@ -88,7 +87,15 @@ kable(dados[1:4])
 ```
 
 
+```{r echo=FALSE}
+res = sum(dados$residuo)
+res
+```
 
+
+$$
+\sum_{i = 1}^{n} y_i - \hat{y_i} = -2.559
+$$
 
 
 

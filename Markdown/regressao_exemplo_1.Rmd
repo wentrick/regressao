@@ -42,7 +42,7 @@ Os valores encontrados em sala foram os seguintes:
 
 
 $$
-\hat{\beta_0} = 117.44 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \hat{\beta_1} = 26.79
+\hat{\beta_0} = 117,44 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \hat{\beta_1} = 26,79
 $$
 
 \newpage
@@ -50,7 +50,7 @@ $$
 Com os coeficientes obtidos a nossa equacao ficou assim:
 
 $$
-\hat{Y} = 117.44 + 26.79x_{}
+\hat{Y} = 117,44 + 26,79x_{}
 $$
 Aplicando a equacao encontrada nos dados podemos obter o valor estimado (sabendo que x = massa)
 ```{r include=FALSE}
@@ -64,7 +64,7 @@ dados = dados %>%
          massa_quadrado = massa**2,
          massa_x_taxa = massa*taxa)
 
-sum(dados$residuo)
+erro = sum(dados$residuo)
 ```
 
 ```{r echo=FALSE}
@@ -87,17 +87,184 @@ kable(dados[1:4])
 ```
 
 
-```{r echo=FALSE}
-res = sum(dados$residuo)
-res
+
+```{r echo=TRUE}
+erro
+```
+$$
+\sum_{i = 1}^{n} y_i - \hat{y_i} = -2,559
+$$
+\newpage
+
+
+##### Calculando os parametros $\beta_1$ e $\beta_0$ computacionalmente:
+
+Com o resultado anterior podemos perceber que devido aos arredondamentos feitos em sala, a soma dos residuos nao deu zero! Agora vamos calcular $\beta_1$ e $\beta_0$ por meio do R. Fazendo os calculos necessarios temos que:
+```{r include=FALSE}
+x_barra = mean(dados$massa) #media amostral de x 
+y_barra = mean(dados$taxa) #media amostra de y
+x = sum(dados$massa) #somatorio de xi
+y = sum(dados$taxa) #somatorio de yi
+x_quadrado = sum(dados$massa_quadrado) #somatorio de xi ao quadrado
+y_quadrado = sum(dados$taxa_quadrado) #somatorio de yi ao quadrado
+xy = sum(dados$massa_x_taxa) #somatorio de x vezes y
+
+beta_1 = (xy - n*x_barra*y_barra)/(x_quadrado-n*(x_barra)**2) #calculo do estimador de beta 1
+beta_0 = y_barra - beta_1*x_barra #calculo do estimador de beta 0
+
+dados = dados %>%
+  mutate(estimado = 117.44 +26.79*massa,
+         estimado_melhor = beta_0+beta_1*massa,
+         residuo = taxa - estimado,
+         residuo_melhor = taxa - estimado_melhor,
+         taxa_quadrado = taxa**2,
+         massa_quadrado = massa**2,
+         massa_x_taxa = massa*taxa)
+erro = sum(dados$residuo_melhor)
+```
+
+
+```{r include=FALSE}
+kable(dados%>%
+        select(1,2,5,6,7))
 ```
 
 
 $$
-\sum_{i = 1}^{n} y_i - \hat{y_i} = -2.559
+\bar{Y} = 1.369,526 \ \ \ \ \bar{X} = 46,74211 
+$$
+$$
+\sum_{n=1}^{n}X_i = 888,1 \ \ \ \ \sum_{n=1}^{n}Y_i = 26.021
+$$
+$$
+\sum_{n=1}^{n}X_i^2 = 42747,03 \ \ \ \ \sum_{n=1}^{n}Y_i^2 = 36.829.995 \ \ \ \ \sum_{n=1}^{n}X_iY_i = 1.249.481
 $$
 
+Com esses resultados podemos aplicar na formual dos estimadores de $\beta_1$ e $\beta_0$
 
+$$
+\hat{\beta_1} = \frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \ \ \ \ \hat{\beta_0} = \bar{Y} - \hat{\beta_1}\bar{X}
+$$
+e assim encontramos:
+ 
+$$
+\hat{\beta_1} = \frac{1.249.481-19 \cdot 46,74211 \cdot 1.369,526}{42747,03 - 19 \cdot 46,74211^2} = 26,87857 \ \ \ \ \ \ \ \hat{\beta_0} = 1.369,526 - 26.87857 \cdot 46,74211 = 113,1654
+$$
+
+Com os novos coeficientes obtidos de $\beta_1$ e $\beta_0$ a nossa equacao ficou assim:
+
+$$
+\hat{Y} = 113,1654 + 26,87857x_{}
+$$
+Agora podemos recalcular o valor estimado e depois fazer o calculo dos residuos.
+```{r echo=FALSE}
+kable(dados%>%
+        select(Massa = massa,Taxa = taxa, `Novo estimado` = estimado_melhor,`Novo residuo` = residuo_melhor))
+```
+
+\newpage
+
+realizando o calculo da soma de reisiduos novamente podemos verificar que dessa vez devido a maior precisao atingimos o 0
+
+```{r echo=TRUE}
+erro
+round(erro,4)
+```
+
+Podemos rodar o modelo completo no R para ter nocao dos resultado!
+
+```{r}
+lm(dados$taxa ~ dados$massa) %>% summary()
+```
+
+
+
+\newpage
+
+
+##### Calcule o estimador da variancia dos erros :
+
+
+
+Podemos estimar o $\sigma^2$ da variancia dos erros por meio da seguinte formula:
+
+
+$$
+\hat\sigma^2 = \frac{\sum_{i=1}^{n}e_i^2}{n-2}
+$$
+```{r include=FALSE}
+erro_quadrado = sum(dados$residuo_melhor**2)
+
+sigma_quadrado = erro_quadrado/(n - 2)
+
+sigma = sqrt(sigma_quadrado)
+
+erro_padrao = sigma/sqrt(n)
+
+coeficiente_variacao = sigma/y_barra #desvio padrao divido pela media
+```
+
+
+Realizando os calculos no R temos:
+
+
+$$
+\hat\sigma^2 = \frac{\sum_{i=1}^{n}e_i^2}{n-2} = \frac{301.051,1}{19-2} = \frac{301.051,1}{17} = 17.708,89 \ \ \ \ \ \hat\sigma = \sqrt{\hat\sigma^2} = 133,0747
+$$
+Podemos calcular o erro padrao por meio da seguinte formula:
+
+$$
+SE = \frac{s}{\sqrt{n}}
+$$
+onde "s" representa o desvio padrão da amostra e "n" é o tamanho da amostra. O símbolo "SE" é usado para indicar o erro padrão.
+
+Realizando os calculos obtemos o seguinte valor:
+
+
+$$
+SE = \frac{s}{\sqrt{n}}= \frac{133,0747}{\sqrt{19}} = 30,52944
+$$
+
+para ter uma nocao da variabilidade pode calcular o coeficiente de variação (CV) que é uma medida relativa de variabilidade que é frequentemente usada para comparar a variabilidade relativa entre diferentes conjuntos de dados. É definido como o desvio padrão dividido pela média, expresso como uma porcentagem.
+
+$$
+CV = \frac{s}{\overline{x}} \times 100\%
+$$
+
+onde "s" representa o desvio padrão da amostra e $\overline{x}$ representa a média da amostra. O símbolo "%" indica que o resultado é expresso como uma porcentagem.
+
+Utilizando o R para o calculo obtemos o seguinte resultado:
+
+$$
+CV = \frac{s}{\overline{x}} \times 100 = \frac{133,0747}{1.369,526} \times 100 = 9,716845\%
+$$
+##### Calcule o estimado da variancia de $\beta_1$ e $\beta_0$:
+
+```{r}
+s2_beta_1 = sigma_quadrado/(x_quadrado - n* x_barra^2)
+
+s_beta_1 = sqrt(s2_beta_1)
+
+coeficiente_variacao_beta_1 = s_beta_1/beta_1
+
+
+s2_beta_0 =  sigma_quadrado*(x_quadrado/(n*(x_quadrado - n*x_barra**2)))
+
+s_beta_0 = sqrt(s2_beta_0)
+
+coeficiente_variacao_beta_0 = s_beta_0/beta_0 #variancia maior pois incorpara a variancia de beta 1 (no caso ele repsresenta someente o intercepto ent nao faz mt diferenca)
+
+```
+
+As formulas para o calculo sao as seguintes:
+
+$$
+s^2(\beta_0) = V(\beta_0) = \hat\sigma^2 [\frac{\sum_{i=1}^{n}X_i^2}{n(\sum_{i=1}^{n}X_i^2 - n\bar{X}^2)}]
+$$
+
+$$
+s^2(\beta_1) = V(\beta_1) =  \frac{\hat\sigma^2}{n(\sum_{i=1}^{n}X_i^2 - n\bar{X}^2)}
+$$
 
 
 

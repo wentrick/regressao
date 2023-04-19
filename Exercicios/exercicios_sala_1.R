@@ -64,7 +64,7 @@ lm(dados$taxa ~ dados$massa) %>% summary()
 
 ## estimando a variancia do beta 0 e beta 1
 
-s2_beta_1 = sigma_quadrado/(x_quadrado - n* x_barra^2)
+s2_beta_1 = (sigma_quadrado/(x_quadrado - n* x_barra^2))
 
 s_beta_1 = sqrt(s2_beta_1)
 
@@ -80,10 +80,29 @@ coeficiente_variacao_beta_0 = s_beta_0/beta_0 #variancia maior pois incorpara a 
 
 
 #estimando intervalo de confianca para beta 1 com 95% de confianca (os sinais estao "trocados pq nao usei o lower.tail = FALSE")
-alfa = 0.1
-
+alfa = 0.05
 ic_beta_1  = c(beta_1-qt(alfa/2, n-2,lower.tail = FALSE)*s_beta_1,beta_1+qt(alfa/2, n-2,lower.tail = FALSE)*s_beta_1)
+##
 
+fit <- lm(dados$taxa ~ dados$massa)
+
+# Cálculo do intervalo de confiança para beta1 com nível de significância de 0.05
+alpha <- 0.05
+se <- summary(fit)$coefficients[2, 2]
+beta1 <- summary(fit)$coefficients[2, 1]
+t_crit <- qt(1 - alpha/2, df = fit$df.residual)
+lower <- beta1 - t_crit * se
+upper <- beta1 + t_crit * se
+cat("Intervalo de confiança para beta1: [", lower, ", ", upper, "]\n")
+# Cálculo do intervalo de confiança para beta0 com nível de significância de 0.05
+alpha <- 0.05
+se <- summary(fit)$coefficients[1, 2]
+beta1 <- summary(fit)$coefficients[1, 1]
+t_crit <- qt(1 - alpha/2, df = fit$df.residual)
+lower <- beta1 - t_crit * se
+upper <- beta1 + t_crit * se
+cat("Intervalo de confiança para beta0: [", lower, ", ", upper, "]\n")
+##
 #estimando intervalo de confianca para beta 0 com 95% de confianca 
 alfa = 0.1
 

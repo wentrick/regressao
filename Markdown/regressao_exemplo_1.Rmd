@@ -238,9 +238,12 @@ Utilizando o R para o calculo obtemos o seguinte resultado:
 $$
 CV = \frac{s}{\overline{x}} \times 100 = \frac{133,0747}{1.369,526} \times 100 = 9,716845\%
 $$
-##### Calcule o estimado da variancia de $\beta_1$ e $\beta_0$:
+\newpage
 
-```{r}
+##### Calculando o estimador da variancia de $\beta_1$ e $\beta_0$:
+
+
+```{r include=FALSE}
 s2_beta_1 = sigma_quadrado/(x_quadrado - n* x_barra^2)
 
 s_beta_1 = sqrt(s2_beta_1)
@@ -263,10 +266,110 @@ s^2(\beta_0) = V(\beta_0) = \hat\sigma^2 [\frac{\sum_{i=1}^{n}X_i^2}{n(\sum_{i=1
 $$
 
 $$
-s^2(\beta_1) = V(\beta_1) =  \frac{\hat\sigma^2}{n(\sum_{i=1}^{n}X_i^2 - n\bar{X}^2)}
+s^2(\beta_1) = V(\beta_1) =  \frac{\hat\sigma^2}{(\sum_{i=1}^{n}X_i^2 - n\bar{X}^2)}
+$$
+Como já temos esses valores calculados é só substituir na formula!
+
+
+$$
+s^2(\beta_1)  =  \frac{17.708,89}{(42.747,03 - 19 \cdot 46,74211^2)} = 14,33493 \ \ \ \ \ s(\beta_1)  = \sqrt{s^2(\beta_1)} =\sqrt{14,33493} =  3,78615 
 $$
 
+$$
+s^2(\beta_0) = 17.708,89 [\frac{42.747,03}{19 \cdot (42.747,03 - 19 \cdot 46,74211^2)}] = 32.251,35 \ \ \ \ \ s(\beta_0)  = \sqrt{s^2(\beta_0)} =\sqrt{32.251,35} =  179,5866
+$$
 
+Vamos calcular os Coeficientes de variacao dos valores estimados da variancia do erro.
+
+$$
+CV\beta_1 = \frac{s(\beta_1)}{\beta_1} \times 100 = \frac{3,78615}{26,87857} \times 100 = 14,08613\%
+$$
+$$
+CV\beta_0 = \frac{s(\beta_0)}{\beta_0} \times 100 = \frac{179,5866}{113,1654} \times 100 = 158,6939\%
+$$
+
+Vale  notar que a variancia de $\beta_0$ é maior pois incorpara a variancia de $\beta_1$ (no caso ele representa somente o intercepto entao nao faz muita diferenca nesse exemplo em especifico)
+
+\newpage
+
+##### Vamos calcular um intervalo de confianca para $\beta_0$ e $\beta_1$:
+
+Sabemos que a estatistica : 
+
+
+
+$$
+\frac{\hat\beta_1 - \beta_1}{S(\hat\beta_1)} \sim t(n-2)
+$$
+
+$$
+IC = P(-t_{1-\alpha/2} < \frac{\hat\beta_1 - \beta_1}{S(\beta_1)} < t_{1-\alpha/2})
+$$
+Isolando o $\beta_1$ obtemos:
+$$
+IC = P(\hat\beta_1 - t_{1-\alpha/2}\cdot S(\hat\beta_1) <  \beta_1 < \hat\beta_1 + t_{1-\alpha/2} \cdot S(\hat\beta_1)) = \hat\beta_1 \pm t_{1-\alpha/2}\cdot S(\hat\beta_1)
+$$
+
+Sabendo que $S(\hat\beta_1)$ é igual a $\frac{\hat\sigma}{\sqrt{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2}}$
+
+Chegamos na formula final para o intervalo de confianca:
+
+$$
+IC = \hat\beta_1 \pm t_{1-\alpha/2}\cdot \frac{\hat\sigma}{\sqrt{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2}})
+$$
+Seguindo a mesma deducao e sabendo que $S(\hat\beta_0) =  \frac{\hat\sigma \cdot \sum_{i=1}^{n}X_i^2}{\sqrt{n(\sum_{i=1}^{n}X_i^2 - n\bar{X}^2)}}$ obtemos:
+
+
+$$
+IC = \hat\beta_0 \pm t_{1-\alpha/2}\cdot \frac{\hat\sigma \cdot \sum_{i=1}^{n}X_i^2}{\sqrt{n(\sum_{i=1}^{n}X_i^2 - n\bar{X}^2)}})
+$$
+
+Fazendo os calculos no R obtemos os seguintes intervaloes para $\beta_0$ e $\beta_1$:
+
+```{r}
+#estimando intervalo de confianca para beta 1 com 95% de confianca 
+alfa = 0.05
+
+ic_beta_1 = c(beta_1-qt(alfa/2, n-2,lower.tail = FALSE)*s_beta_1,beta_1+qt(alfa/2, n-2,lower.tail = FALSE)*s_beta_1)
+
+#estimando intervalo de confianca para beta 0 com 95% de confianca 
+alfa = 0.05
+
+ic_beta_0 = c(beta_0-qt(alfa/2, n-2,lower.tail = FALSE)*s_beta_0,beta_0+qt((alfa/2), n-2,lower.tail = FALSE)*s_beta_0)
+```
+
+
+```{r}
+ic_beta_1
+```
+
+```{r}
+ic_beta_0
+```
+
+Podemos verificar isso por meio da funcao lm() que roda a regressao por completa!
+
+
+```{r}
+fit <- lm(dados$taxa ~ dados$massa)
+
+# Cálculo do intervalo de confiança para beta1 com nível de significância de 0.05
+alpha <- 0.05
+se_b1 <- summary(fit)$coefficients[2, 2]
+beta1 <- summary(fit)$coefficients[2, 1]
+t_crit <- qt(1 - alpha/2, df = fit$df.residual)
+lower_b1 <- beta1 - t_crit * se_b1
+upper_b1 <- beta1 + t_crit * se_b1
+cat("Intervalo de confiança para beta1: [", lower_b1, ", ", upper_b1, "]\n")
+# Cálculo do intervalo de confiança para beta0 com nível de significância de 0.05
+alpha <- 0.05
+se_b0 <- summary(fit)$coefficients[1, 2]
+beta0 <- summary(fit)$coefficients[1, 1]
+t_crit <- qt(1 - alpha/2, df = fit$df.residual)
+lower_b0 <- beta0 - t_crit * se_b0
+upper_b0 <- beta0 + t_crit * se_b0
+cat("Intervalo de confiança para beta0: [", lower_b0, ", ", upper_b0, "]\n")
+```
 
 
 

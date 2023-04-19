@@ -373,3 +373,8 @@ cat("Intervalo de confiança para beta0: [", lower_b0, ", ", upper_b0, "]\n")
 
 
 
+
+
+
+
+

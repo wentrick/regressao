@@ -2,12 +2,16 @@
 title: "Análise de Regressão"
 author: "Davi Wentrick Feijó"
 date: "2023-04-17"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-pacman::p_load(tidyverse,knitr)
+pacman::p_load(tidyverse,knitr,formatR)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 70), tidy = TRUE)
 ```
 
 #### Exemplo 1 
@@ -29,6 +33,8 @@ dados = data.frame(massa,taxa)
 kable(dados)
 ```
 
+\newpage
+
 ##### Calcule o estimadores abaixo manualmente (com arredondamentos):
 
 
@@ -45,7 +51,7 @@ $$
 \hat{\beta_0} = 117,44 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  \hat{\beta_1} = 26,79
 $$
 
-\newpage
+
 
 Com os coeficientes obtidos a nossa equacao ficou assim:
 
@@ -370,10 +376,114 @@ lower_b0 <- beta0 - t_crit * se_b0
 upper_b0 <- beta0 + t_crit * se_b0
 cat("Intervalo de confiança para beta0: [", lower_b0, ", ", upper_b0, "]\n")
 ```
+\newpage
+
+##### Vamos formular os teste de hipoteses sobre $\beta_0$ e $\beta_1$
+
+$$
+H_0: \beta_1 = 0 \ \ \ \sim \ \ \ H_0: \text{Ausencia de regressao}
+$$
+
+$$
+H_1: \beta_1 \neq 0 \ \ \ \sim \ \ \ H_1: \text{Existe de regressao}
+$$
 
 
+A estatistica do teste é dado por:
+
+$$
+T = \frac{\hat\beta_1}{s(\hat\beta_1)} : \text{distribuição de Student com (n-2) g.l}
+$$
+
+```{r}
+#Ho: beta_1 = 0
+#H0: beta_1 > 0 (ou != 0)
+alfa = 0.05
+teste_stat = beta_1/s_beta_1
+
+rc = qt(alfa,n-2) #regiao critica
+
+pvalor = pt(teste_stat,n-2, lower.tail = FALSE) #pvalor
+
+result = pvalor < alfa #pvalor menor que o alfa de 5% logo rejeitamos H0
+cat("O P-Valor observado foi:",pvalor, "O valor observado pertence a regiao crítica de",alfa,"?:",result)
+
+```
+
+Logo existe uma regressao ou seja $\beta_1$ contribui para a relacao da massa sem gordura e o metabolismo
+
+O teste de hipotese sobre $\beta_0$ segue os mesmos parametros do teste anterior:
+
+$$
+H_0: \beta_0 = \beta 
+$$
+
+$$
+H_1: \beta_0 \neq \beta 
+$$
+A estatistica do teste é dado por:
+
+$$
+T = \frac{\hat\beta_0}{s(\hat\beta_0)} : \text{distribuição de Student com (n-2) g.l}
+$$
+Esse teste busca testar um valor de $\beta_0$ contra algum outro valor de interesse
+
+\newpage
+
+##### Intervalo de confianca sobre $\sigma^2$
 
 
+Temos que:
+
+$$
+\frac{(n-2)\hat\sigma^2}{\sigma^2}: \text{distribuição de Qui-Quadrado com (n-2) g.l}
+$$
+
+Fixada uma probabilidade de de $1-\alpha$ podemos determinar $\chi_{\alpha/2}$ e $\chi_{1-\alpha/2}$ para chegar na seguinte formula:
+
+$$
+P(\chi_{\alpha/2} < \frac{(n-2)\hat\sigma^2}{\sigma^2} < \chi_{1-\alpha/2}) = 1-\alpha
+$$
+
+$$
+P(\frac{(n-2)\hat\sigma^2}{\chi_{\alpha/2}} < \sigma^2 < \frac{(n-2)\hat\sigma^2}{\chi_{1-\alpha/2}}) = 1-\alpha
+$$
+
+Obtemos o seguinte intervalo:
+
+$$
+\sigma^2 \in (\frac{(n-2)\hat\sigma^2}{\chi_{\alpha/2}} , \frac{(n-2)\hat\sigma^2}{\chi_{1-\alpha/2}}) 
+$$
+
+Relembrando que:
+
+$$
+(n-2)\hat\sigma^2 = \sum_{i=1}^{n} e_{i}^2
+$$
+
+
+Podemos chegar nesse novo intervalo:
+
+$$
+\sigma^2 \in (\frac{\sum_{i=1}^{n} e_{i}^2}{\chi_{\alpha/2}} , \frac{\sum_{i=1}^{n} e_{i}^2}{\chi_{1-\alpha/2}}) 
+$$
+
+```{r}
+gl = n-2
+alfa = 0.05
+#intervalo usando a formula do primeiro intervalo encontrado
+ic_sigma_quadrado = c(((n-2)*sigma_quadrado/qchisq(alfa/2,gl,lower.tail = FALSE)),((n-2)*sigma_quadrado/qchisq(1-alfa/2,gl,lower.tail = FALSE)))
+cat("Intervalo de confiança para sigma quadrado: [", ic_sigma_quadrado[1], ", ", ic_sigma_quadrado[2], "]\n")
+```
+
+
+```{r}
+
+#intervalo usando a soma dos residuos ao quadrado
+ic_sigma_quadrado = c(erro_quadrado/qchisq(alfa/2,gl,lower.tail = FALSE),erro_quadrado/qchisq(1-(alfa/2),gl,lower.tail = FALSE))
+
+cat("Intervalo de confiança para sigma quadrado: [", ic_sigma_quadrado[1], ", ", ic_sigma_quadrado[2], "]\n")
+```
 
 
 

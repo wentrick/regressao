@@ -112,15 +112,15 @@ ic_beta_0  = c(beta_0-qt(alfa/2, n-2,lower.tail = FALSE)*s_beta_0,beta_0+qt((alf
 
 #Ho: beta_1 = 0
 #H0: beta_1 > 0 (ou != 0)
-alfa = 0.95
+alfa = 0.05
 teste_stat = beta_1/s_beta_1
 
 rc = qt(alfa,n-2) #regiao critica
 
 pvalor = pt(teste_stat,n-2, lower.tail = FALSE) #pvalor
 
-pvalor < alfa #pvalor menos que o alfa de 5% logo rejeitamos H0
-
+result = pvalor < alfa #pvalor menor que o alfa de 5% logo rejeitamos H0
+cat("O P-Valor observado foi:",pvalor, "O valor observado pertence a regiao crítica de",alfa,"?:",result)
 #logo existe uma regressao ou seja beta 1 contribui para a relacao da massa sem gordura e o metabolismo
 
 
@@ -134,17 +134,17 @@ pvalor < alfa #pvalor menos que o alfa de 5% logo rejeitamos H0
 #teste de hipotese e intervalo de confianca sobre sigma quadrado
 
 gl = n-2
-alfa = 0.1
+alfa = 0.05
+#intervalo usando a formula do primeiro intervalo encontrado
+ic_sigma_quadrado = c(((n-2)*sigma_quadrado/qchisq(alfa/2,gl,lower.tail = FALSE)),((n-2)*sigma_quadrado/qchisq(1-alfa/2,gl,lower.tail = FALSE)))
+cat("Intervalo de confiança para sigma quadrado: [", ic_sigma_quadrado[1], ", ", ic_sigma_quadrado[2], "]\n")
 
-qchisq(alfa/2,gl)
+#intervalo usando a soma dos residuos ao quadrado
+ic_sigma_quadrado = c(erro_quadrado/qchisq(alfa/2,gl,lower.tail = FALSE),erro_quadrado/qchisq(1-(alfa/2),gl,lower.tail = FALSE))
 
-qchisq(alfa/2,gl,lower.tail = FALSE)
+cat("Intervalo de confiança para sigma quadrado: [", ic_sigma_quadrado[1], ", ", ic_sigma_quadrado[2], "]\n")
 
-ic_sigma_quadrado = c(((n-2)*sigma_quadrado/qchisq(alfa/2,gl,lower.tail = FALSE)),((n-2)*sigma_quadrado/qchisq(alfa/2,gl)))
 
-#ou podemos usar os residuos - verificar nos slides ta dando errado
-
-#ic_sigma_quadrado = c((erro^2/qchisq(alfa/2,gl,lower.tail = FALSE)),(erro^2/qchisq(alfa/2,gl)))
 
 #estimativa intervalar da média de Y dado um x
 

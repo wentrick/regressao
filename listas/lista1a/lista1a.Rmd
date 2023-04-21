@@ -1,0 +1,70 @@
+---
+title: "Lista 1a Regressao"
+author: "Davi Wentrick Feijó"
+date: "2023-04-21"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+pacman::p_load(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Os sócios de um spa em uma estação de águas pagam uma anuidade de 300 unidades monetárias (u.m.) mais uma taxa de 2 u.m. para cada visita ao spa. Seja o custo total anual em unidades monetárias (u.m.) para um sócio e o número de visitas do sócio ao spa durante o ano. Expresse a relação entre e matematicamente. Esta é uma relação funcional ou estatística? Justifique sua resposta.
+
+
+Lembrando que a equacao de uma reta segue:
+$$
+y = ax+b
+$$
+
+temos:
+
+$$
+y = 2x+300
+$$
+
+```{r echo=FALSE}
+equation <- function(x) {2*x + 300}
+dt = data.frame(x = 1:100)
+ggplot(data.frame(x = 1:100), aes(x)) +
+  geom_function(fun = equation, colour = "red")
+```
+
+Podemos observar que se trata de uma relacao funcional porque nao existe variabilidade nos dados!
+
+
+
+
+### Suponha que o volume de vendas em unidades monetárias (u.m.) é medido precisamente, mas erros de escrituração são frequentes no registro das vendas. Neste caso, a relação entre o número de unidades vendidas e o volume de vendas é funcional ou estatística? Justifique sua resposta.
+
+Ao adicionarmos esse erro estamos adcicionando variabilidade nos dados o que nos da uma relacao estatistica!
+
+
+
+### Ao pesquisar a poupança de famílias em função da renda familiar observou-se que famílias com a mesma renda apresentavam valores de poupança diferentes. Que característica do modelo regressivo é ilustrada por esta situação?
+
+É a variabilidade que observamos, que dentro do modelo é representada pelo erro!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

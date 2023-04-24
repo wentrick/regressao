@@ -224,4 +224,4 @@ r_2 = ssr/ssto
 r = sqrt(r_2) #volta completa terminamos onde começamos
 
 
-##### Diagnostico Regressao -----
+##### Diagnostico Regressão -----

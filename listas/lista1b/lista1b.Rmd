@@ -1,0 +1,268 @@
+---
+title: "Lista 1 B"
+author: "Davi Wentrick Feijó"
+date: "2023-04-21"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Em um exercício de simulação considerando um modelo de regressão linear simples com parâmetros $\beta_0 = 100$, $\beta_1 = 20$ e $\sigma^2 = 25$, será gerada uma observação de $Y$ para $X = 5$.
+
+#### a) É possível determinar a probabilidade exata de que será um valor entre 195 e 205? Justifique sua resposta.
+
+Nao pois nao sabemos qual é a distribuicao do erro do modelo
+
+#### b) Se for utilizado um modelo de regressão com erro normal, é possível determinar a probabilidade acima? Caso seja possível, determine seu valor. Justifique sua resposta.
+
+Assumindo normalidade nos obtemos a seguinte distribuicao dos erros:
+
+$$
+\epsilon \sim N(\mu,\sigma^2)
+$$
+
+onde:
+
+$$
+{\mu} = \hat{Y} = E(\hat\beta_0 + \hat\beta_1\cdot X) \\
+$$ 
+Substituindo para $X = 5$ obtemos:
+$$
+{\mu} = \hat{Y} = E(100 + 20\cdot 5) = 200 \\
+$$
+
+Como no exercicio foi dado que $\sigma^2 = 25$ chegamos na seguinte distribuicao dado $X = 5$:
+
+$$
+\epsilon \sim N(200,25)
+$$ Agora podemos calcular a probabilidade de $X \in [195,205]$:
+
+Manulamente teriamos que resolver a seguinte conta $P(195 < x < 205)$
+
+$$
+P(195 < x < 205) = P(x< 205) - (1 - P(x>195)) = P(x < 205) - P(x < 195)
+$$ Em seguida teriamos que passar para a normal padrao $N(0,1)$ e calcular a probabilidade, mas vamos fazer computacionalmente por meio desse codigo:
+
+\newpage
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+beta_0 = 100
+beta_1 = 20
+x_escolhido = 5
+sigma_quadrado = 25 #desvio padrao
+y_new_hat <- beta_0 + beta_1*x_escolhido #media
+
+#se assumirmos que os erros seguem normalidade podemos 
+#calcular a partir de uma normal de media 200 e desvio padrao 25
+
+n_value_lower <- pnorm(195, mean = y_new_hat,sd = 25) #P(x<205)
+n_value_upper <- pnorm(205, mean = y_new_hat,sd = 25) #P(x<195)
+
+prob = n_value_upper-n_value_lower
+```
+
+```{r echo=FALSE}
+cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
+cat("A probabilidade de Y estar entre 195 e 200 é:",prob)
+```
+
+\newpage
+
+### Considere um modelo regressivo linear simples. com erro normal. Suponha que os valores dos parâmetros são $\beta_0 = 200$, $\beta_1 = 5$ e $\sigma = 4$
+
+$$
+Y = 200+5X 
+$$
+
+#### a) Qual a distribuição de probabilidade de $Y$ para $X = 10$? E para $X = 25$?
+
+Para $X = 10$:
+
+$$
+Y = 200+5 \cdot 10 = 250
+$$
+
+$$
+\hat{Y}|X = 10 \sim N(250,16)
+$$ Para $X = 25$:
+
+$$
+Y = 200+5 \cdot 10 = 325
+$$
+
+$$
+\hat{Y}|X = 25 \sim N(325,16)
+$$
+
+#### b) Explique o significado dos parâmetros $\beta_0$ e $\beta_1$. Suponha que o alcance do modelo inclui $X=0$.  
+
+O paramentro $\beta_0$ nos indica onde que a reta toca o eixo $Y$, já os $\beta_1$ indica a taxa de aumento de Y em relacao a X. O ponto de $X = 0$ é igual ao $\beta_0$  
+
+
+
+### Seja o MRLS $Y_i = \beta_0 + \beta_1 +X_i + \epsilon_i$, $\forall i = 1,n$ e $\beta_0$ e $\beta_1$ Seus estimadores:  
+
+
+#### Prove que:  
+
+
+##### $\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat{Y_i}$  
+
+
+Vale relembrar que a $E(C) = C$ caso $C$ seja uma constante  
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat{Y_i} \\
+$$
+
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}E(Y_i) \\
+$$
+
+$$
+\sum_{i=1}^{n}\beta_0 + \beta_1\cdot X_i = \sum_{i=1}^{n}E(\hat\beta_0 + \hat\beta_1\cdot X_i) \\
+$$
+
+$$
+\sum_{i=1}^{n}\beta_0 + \beta_1\cdot X_i = \sum_{i=1}^{n}E(\hat\beta_0) + E(\hat\beta_1\cdot X_i) \\
+$$
+
+$$
+\sum_{i=1}^{n}\beta_0 + \beta_1\cdot X_i = \sum_{i=1}^{n}\hat\beta_0 + \hat\beta_1\cdot E(X_i) \\
+$$
+
+$$
+\sum_{i=1}^{n}\beta_0 + \beta_1\cdot X_i = \sum_{i=1}^{n}\hat\beta_0 + \hat\beta_1\cdot X_i \\
+$$
+Como $\hat\beta_0$ e $\hat\beta_1$ sao estimadores de $\beta_0$ e $\beta_1$ entao voce tem os mesmoes elementos de cada lado!
+
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat{Y_i} \\
+$$
+
+
+##### $\sum_{i=1}^{n}e_i = 0$ onde $e_i = Y_i - \hat{Y_i}$
+
+Utilizando do resultado que encontramos anteriormente temos:
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat{Y_i} \\
+$$
+
+$$
+\sum_{i=1}^{n}Y_i - \sum_{i=1}^{n}\hat{Y_i} = 0 \\ 
+$$
+
+$$
+\sum_{i=1}^{n}Y_i - \hat{Y_i} = 0 \\ 
+$$
+
+$$
+\sum_{i=1}^{n}e_i = 0 \\
+$$
+
+
+##### A reta de regressão estimada passa pelo centro de gravidade $(\bar{X},\bar{Y})$ no diagrama de dispersão $(X_i,Y_i)$.
+
+
+$$
+(\bar{X},\bar{Y}) = (E(X_i),E(Y_i)) = (X_i,E(\hat\beta_0 + \hat\beta_1\cdot X_i))
+$$
+$$
+(X_i,E(\hat\beta_0) + E(\hat\beta_1\cdot X_i)) = (X_i,\hat\beta_0 + \hat\beta_1\cdot E(X_i))
+$$
+$$
+(X_i,E(\hat\beta_0) + E(\hat\beta_1\cdot X_i)) = (X_i,\hat\beta_0 + \hat\beta_1\cdot X_i) = (X_i,Y_i)
+$$
+- verificar esse resultado nao sei se está certo -
+
+\newpage
+##### $\sum_{i=1}^{n}X_i \cdot e_i = 0$
+
+$$
+\sum_{i=1}^{n}X_i \cdot e_i = 0
+$$
+$$
+\sum_{i=1}^{n}X_i \cdot (Y_i - \hat{Y_i}) = 0
+$$
+$$
+\sum_{i=1}^{n}(X_iY_i - X_i\hat{Y_i}) = 0
+$$
+$$
+\sum_{i=1}^{n}X_iY_i - \sum_{i=1}^{n}X_i\hat{Y_i} = 0
+$$
+$$
+\sum_{i=1}^{n}X_i(\beta_0 + \beta_1\cdot X_i) - \sum_{i=1}^{n}X_i(\hat\beta_0 + \hat\beta_1\cdot X_i)  = 0
+$$
+
+$$
+\sum_{i=1}^{n}X_i\beta_0 + X_i\beta_1\cdot X_i - \sum_{i=1}^{n}(X_i\hat\beta_0 + X_i\hat\beta_1\cdot X_i)  = 0
+$$
+$$
+\sum_{i=1}^{n}X_i\beta_0 + X_i^2\beta_1 - \sum_{i=1}^{n}X_i\hat\beta_0 + X_i^2\hat\beta_1  = 0
+$$
+$$
+\sum_{i=1}^{n}X_i\beta_0 + \sum_{i=1}^{n}X_i^2\beta_1 - \sum_{i=1}^{n}X_i\hat\beta_0 + \sum_{i=1}^{n}X_i^2\hat\beta_1  = 0
+$$
+Como $\hat\beta_0$ e $\hat\beta_1$ sao estimadores de $\beta_0$ e $\beta_1$ entao voce pode reorganizar a conta para ter os mesmos elementos de cada lado!
+
+$$
+\sum_{i=1}^{n}X_i\beta_0 + \sum_{i=1}^{n}X_i^2\beta_1 = \sum_{i=1}^{n}X_i\hat\beta_0 + \sum_{i=1}^{n}X_i^2\hat\beta_1  
+$$
+Logo:
+
+
+$$
+\sum_{i=1}^{n}X_i\beta_0 + \sum_{i=1}^{n}X_i^2\beta_1 = \sum_{i=1}^{n}X_i\hat\beta_0 + \sum_{i=1}^{n}X_i^2\hat\beta_1 
+$$
+$$
+\sum_{i=1}^{n}X_iY_i = \sum_{i=1}^{n}X_i\hat{Y_i} 
+$$
+
+\newpage
+
+##### $\sum_{i=1}^{n}Y_i \cdot e_i = 0$
+
+$$
+\sum_{i=1}^{n}Y_i \cdot e_i = 0
+$$
+
+$$
+\sum_{i=1}^{n}Y_i \cdot (Y_i - \hat{Y_i}) = 0
+$$
+
+$$
+\sum_{i=1}^{n}Y_iY_i - Y_i\hat{Y_i} = 0
+$$
+
+$$
+\sum_{i=1}^{n}Y_i^2 - Y_i\hat{Y_i} = 0
+$$
+
+$$
+\sum_{i=1}^{n}Y_i^2 - (\beta_0 + \beta_1\cdot X_i)({\hat\beta_0 + \hat\beta_1\cdot X_i}) = 0
+$$
+
+$$
+\sum_{i=1}^{n}Y_i^2 - ({\hat\beta_0\beta_0 +\beta_0\hat\beta_1X_i+\hat\beta_0\beta_1 X_i}+\beta_1X_i\hat\beta_1X_i) = 0
+$$
+
+Como $\hat\beta_0$ e $\hat\beta_1$ sao estimadores de $\beta_0$ e $\beta_1$ entao voce pode reorganizar a conta para ter os mesmos elementos de cada lado!
+
+
+$$
+\sum_{i=1}^{n}Y_i^2 - \sum_{i=1}^{n}(\beta_0^2 +2(\beta_0\beta_1X_i)+\beta_1^2X_i^2) = 0
+$$
+
+$$
+\sum_{i=1}^{n}Y_i^2 = \sum_{i=1}^{n}(\beta_0^2 +2(\beta_0\beta_1X_i)+\beta_1^2X_i^2) 
+$$
+
+Sabemos que $\beta_0^2 +2(\beta_0\beta_1X_i)+\beta_1^2X_i^2 = Y_i\hat{Y_i}$
+
+$$
+\sum_{i=1}^{n}Y_i^2 = \sum_{i=1}^{n}Y_i\hat{Y_i}
+$$
+
+
+

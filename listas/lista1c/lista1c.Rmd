@@ -1,0 +1,331 @@
+---
+title: "Lista 1C"
+author: "Davi Wentrick Feijó"
+date: "2023-04-22"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(tidyverse,ggpubr,knitr)
+```
+
+```{r include=FALSE}
+xi = c(1,0,2,0,3,1,0,1,2,0)
+yi = c(16,9,17,12,22,13,8,15,19,11)
+
+dados = data.frame(xi,yi)
+```
+
+
+### Uma substância usada em pesquisas biológicas e médicas é enviada por avião aos usuários em caixas de 1000 ampolas. Os dados abaixo, envolvendo 10 remessas, contém as informações coletadas sobre o número de vezes que a caixa foi transferida de uma aeronave durante o percurso $(X)$ e o número de ampolas quebradas até a chegada $(Y)$. Assumir que um modelo de regressão de primeira ordem é apropriado.
+
+```{r echo=FALSE}
+kable(dados)
+```
+
+\newpage
+
+#### a) Represente graficamente os dados e analise-o.
+
+
+```{r echo=FALSE,fig.align='center', dpi=300}
+ggplot(dados,aes(x = xi,y=yi))+
+  geom_point()
+```
+
+\newpage
+
+#### b) Calcule o coeficiente de correlação linear simples entre as variáveis e analise-o. Os dados confirmam, a um nível de significância de 0,05, que existe associação linear entre o número de ampolas quebradas até a chegada da remessa e o número de vezes que a caixa foi transferida de uma aeronave durante o percurso?
+
+```{r echo=FALSE}
+corr = cor(xi, yi, method = "pearson") #traz o coeficiente de correlacao
+cat("O coeficiente de correlacao é:",corr)
+cor.test(xi, yi, method = "pearson") #traz o coeficiente e o p-valor
+```
+
+#### c) Modele o estudo acima, especificando a unidade de informação, o tipo de estudo, a variável resposta e a variável explicativa e a hipótese de trabalho.
+
+
+
+\newpage
+
+#### d) Obter as estimativas dos parâmetros do MRLS. Faça um gráfico com a função de regressão estimada e os dados observados. A função de regressão estimada apresenta um bom ajuste neste caso?
+
+$$
+\bar{Y} =  14.2 \ \ \ \ \bar{X} = 1 
+$$
+
+$$
+\sum_{n=1}^{n}X_i = 10 \ \ \ \ \sum_{n=1}^{n}Y_i = 142
+$$
+
+$$
+\sum_{n=1}^{n}X_i^2 = 20 \ \ \ \ \sum_{n=1}^{n}Y_i^2 = 2194 \ \ \ \ \sum_{n=1}^{n}X_iY_i = 182
+$$
+
+$$
+\hat{\beta_1} = \frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \ \ \ \ \hat{\beta_0} = \bar{Y} - \hat{\beta_1}\bar{X}
+$$
+
+```{r include=FALSE}
+dados = dados %>%
+  mutate(yi_quadrado = yi**2,
+         xi_quadrado = xi**2,
+         xiyi = xi*yi)
+
+n = length(xi)
+
+x_barra = mean(dados$xi) #media amostral de x 
+y_barra = mean(dados$yi) #media amostra de y
+x = sum(dados$xi) #somatorio de xi
+y = sum(dados$yi) #somatorio de yi
+x_quadrado = sum(dados$xi_quadrado) #somatorio de xi ao quadrado
+y_quadrado = sum(dados$yi_quadrado) #somatorio de yi ao quadrado
+xy = sum(dados$xiyi) #somatorio de x vezes y
+```
+
+```{r include=FALSE}
+beta_1 = (xy - n*x_barra*y_barra)/(x_quadrado-n*(x_barra)**2) #calculo do estimador de beta 1
+beta_0 = y_barra - beta_1*x_barra #calculo do estimador de beta 0
+```
+
+
+```{r echo=FALSE}
+cat("O valor de Beta 0 é:",beta_0)
+cat("O valor de Beta 0 é:",beta_1)
+```
+
+Com os novos coeficientes obtidos de $\beta_1$ e $\beta_0$ a nossa equacao ficou assim:
+
+$$
+\hat{Y} = 10,2 + 4x_{}
+$$
+
+```{r include=FALSE}
+dados = dados %>% 
+  mutate(estimado = beta_0+beta_1*xi) #calculando os valores estimados
+```
+
+```{r echo=FALSE,fig.align='center', dpi=300}
+#representacao visual
+ggplot(dados)+
+  geom_point(aes(x = xi,y=yi))+
+  geom_line(aes(x = xi,y=estimado))
+```
+
+
+#### e) Obtenha a estimativa pontual do número esperado de ampolas quebradas quando 1 transferência for feita.
+
+```{r echo=FALSE}
+#estimacao pontual quando xi=1
+
+estimado_1 = beta_0+beta_1*1
+
+cat("O valor estimado pontualmente de Y quando X = 1 é:",estimado_1)
+```
+
+#### f) Estime o aumento no número esperado de ampolas quebradas quando forem feitas 2 transferências comparada com 1 transferência.
+
+```{r echo=FALSE}
+#estimacao pontual quando xi=2
+
+estimado_2 = beta_0+beta_1*2
+cat("O valor estimado pontualmente de Y quando X = 1 é:",estimado_2)
+#aumento estimado
+
+diff = estimado_2 - estimado_1
+cat("O aumento estimado entre X = 1 e X = 2 é:",diff)
+```
+
+#### g) Verifique se a sua função de regressão ajustada passa pelo ponto $(\bar{X},\bar{Y})$.
+
+```{r echo=FALSE,fig.align='center', dpi=300}
+ggplot(dados)+
+  geom_point(aes(x = xi,y=yi))+
+  geom_line(aes(x = xi,y=estimado))+
+  geom_point(aes(x = x_barra,y=y_barra),color = "red")
+```
+
+
+#### h) Obtenha o resíduo para o primeiro caso. Qual é a sua relação com $\epsilon_1$?
+
+```{r echo=FALSE}
+dados = dados %>%
+  mutate(residuos = yi - estimado)
+
+dados_x1 = dados %>%
+  filter(xi == 1)
+
+cat("Os residuos quando X = 1 sao:",dados_x1$residuos)
+```
+
+
+#### i) Calcule os resíduos estimados e a soma deles
+
+
+```{r echo=FALSE}
+#somando os residuos
+cat("A soma dos residuos é:",sum(dados$residuos))
+```
+
+
+#### Calcule  MSE. O que é estimado pelo MSE?
+
+
+$$
+MSE = \frac{\sum_{i=1}^{n}e_i^2}{n-2}
+$$
+
+#### k) Estimar $V(\beta_0)$ e $V(\beta_1)$.
+
+
+```{r include=FALSE}
+#calculando a variancia de Beta 0  e Beta 1 
+
+sigma_quadrado_erro = sum(dados$residuos^2)/(n-2)
+sigma_quadrado_erro
+
+s2_beta_1 = (sigma_quadrado_erro/(x_quadrado - n* x_barra^2))
+
+s_beta_1 = sqrt(s2_beta_1)
+
+coeficiente_variacao_beta_1 = s_beta_1/beta_1
+
+
+s2_beta_0 =  sigma_quadrado_erro*(x_quadrado/(n*(x_quadrado - n*x_barra**2)))
+
+s_beta_0 = sqrt(s2_beta_0)
+
+coeficiente_variacao_beta_0 = s_beta_0/beta_0 #variancia maior pois incorpara a variancia de beta 1 (no caso ele repsresenta someente o intercepto ent nao faz mt diferenca)
+
+
+```
+
+```{r echo=FALSE}
+cat("A variancia de Beta 0 é:", s2_beta_0,"\n O desvio padrao é:",s_beta_0, "\n e o coeficiente de variacao é:", coeficiente_variacao_beta_0)
+cat("A variancia de Beta 0 é:", s2_beta_1,"\n O desvio padrao é:",s_beta_1, "\n e o coeficiente de variacao é:", coeficiente_variacao_beta_1)
+```
+
+#### l) Calcular o coeficiente de correlação linear entre $\hat\beta_1$ e $\hat\beta_0$.
+
+```{r echo=FALSE}
+#como faz isso?
+```
+
+#### m) Estime b1 com 95% de confiança. Faça a interpretação do intervalo encontrado.
+```{r echo=FALSE}
+alfa = 0.05
+ic_beta_1  = c(beta_1-qt(alfa/2, n-2,lower.tail = FALSE)*s_beta_1,beta_1+qt(alfa/2, n-2,lower.tail = FALSE)*s_beta_1)
+cat("Intervalo de confiança para Beta 1 com Alfa de",alfa,"é: [", ic_beta_1[1], ", ", ic_beta_1[2], "]\n")
+```
+
+
+#### n) Faça o teste t para decidir se existe ou não regressão linear. Use um nível de significância de 5%. Formule as hipóteses, regra de decisão e a conclusão. Qual é o p-valor do teste? Interprete.
+
+```{r include=FALSE}
+#teste de hipotese sobre beta 1 (teste de ausencia de regressao)
+
+#Ho: beta_1 = 0
+#H0: beta_1 > 0 (ou != 0)
+alfa = 0.05
+teste_stat = beta_1/s_beta_1
+
+rc = qt(alfa,n-2) #regiao critica
+
+pvalor = pt(teste_stat,n-2, lower.tail = FALSE) #pvalor
+
+result = pvalor < alfa #pvalor menor que o alfa de 5% logo rejeitamos H0
+```
+
+
+```{r echo=FALSE}
+cat("O P-Valor observado foi:",pvalor, "O valor observado pertence a regiao crítica de",alfa,"?:",result)
+```
+
+
+#### p) Um especialista na área de medicina sugeriu, baseado em experiências, que o número médio de ampolas quebradas não deveria exceder 9 quando não há transferência. Faça um teste, usando a=0,025%. Formule as hipóteses, regra de decisão e conclusão. Qual é o p-valor do teste?
+
+```{r}
+#estimacao pontual quando xi=0
+
+x_escolhido = 0
+
+#intervalo de confianca
+sigma_erro = sqrt(sigma_quadrado_erro)
+t_value <- qt(0.975, n - 2,lower.tail = TRUE) # Valor crítico da distribuição t-Student para o nível de confiança de 95% e n-2 graus de liberdade
+y_new_hat <- beta_0 + beta_1*x_escolhido # Estimativa pontual da média de Y para o valor de X escolhido
+ic_lower <- y_new_hat - t_value*sigma_erro*sqrt((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + t_value*sigma_erro*sqrt((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
+#arrumar os parenteses da equacao (acho que ja arrumei)
+cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
+cat("Intervalo de confiança para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
+
+#teste de hipoteses
+#Ho: ampolas qubradas quando (x=0) > 9
+#H0: ampolas qubradas quando (x=0) <= 9 
+t_obs = (9 - y_new_hat)/(n-2)
+
+pt(t_obs,n-2,lower.tail = FALSE)
+
+
+```
+
+
+#### q) Devido a mudanças na rota do avião, as remessas podem ter que ser transferidas mais frequentemente do que atualmente. Estime a média de ampolas quebradas para os seguintes números de transferências: X=2 e 4. Faça os intervalos com 99% de confiança. Interprete os resultados.
+
+X = 2
+```{r}
+#estimacao pontual quando xi=0
+
+x_escolhido = 2
+
+#intervalo de confianca
+sigma_erro = sqrt(sigma_quadrado_erro)
+t_value <- qt(0.99, n - 2,lower.tail = TRUE) # Valor crítico da distribuição t-Student para o nível de confiança de 95% e n-2 graus de liberdade
+y_new_hat <- beta_0 + beta_1*x_escolhido # Estimativa pontual da média de Y para o valor de X escolhido
+ic_lower <- y_new_hat - t_value*sigma_erro*sqrt((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + t_value*sigma_erro*sqrt((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
+#arrumar os parenteses da equacao (acho que ja arrumei)
+cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
+cat("Intervalo de confiança para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
+```
+
+X = 4
+```{r}
+#estimacao pontual quando xi=0
+
+x_escolhido = 4
+
+#intervalo de confianca
+sigma_erro = sqrt(sigma_quadrado_erro)
+t_value <- qt(0.99, n - 2,lower.tail = TRUE) # Valor crítico da distribuição t-Student para o nível de confiança de 95% e n-2 graus de liberdade
+y_new_hat <- beta_0 + beta_1*x_escolhido # Estimativa pontual da média de Y para o valor de X escolhido
+ic_lower <- y_new_hat - t_value*sigma_erro*sqrt((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + t_value*sigma_erro*sqrt((1/n)+((x_escolhido- x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
+#arrumar os parenteses da equacao (acho que ja arrumei)
+cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
+cat("Intervalo de confiança para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -180,4 +180,48 @@ cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
 cat("Intervalo de confiança para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
 
 
+###### Soma de quadrados totias
 
+ssto = sum(dados$taxa_quadrado)-n*y_barra^2
+
+#soma de quadrados de erro
+
+sse = erro_quadrado #soma de residuos ao quadrado
+
+#soma de quadrados da regressao
+
+ssr = ssto - sse
+
+#outra forma de se calcular a soma de quadrados da regressa (ssr)
+
+
+ssr = (beta_1^2)*(sum(dados$massa_quadrado)-n*x_barra^2)
+
+
+#quadrado medio da regressao (MSR)
+
+msr = ssr/1
+
+#quadrado medio do erro (mse)
+
+mse = sse/n-2
+
+#valor F observado
+
+f_value = msr/mse
+
+
+df(f_value,n-2,n-1)#pavlor
+qf(0.05,n-2,n-1)#regiao critica
+
+
+#calculando R quadrado
+
+r_2 = ssr/ssto
+
+#calculando o R (coeficiente de correação)
+
+r = sqrt(r_2) #volta completa terminamos onde começamos
+
+
+##### Diagnostico Regressao -----

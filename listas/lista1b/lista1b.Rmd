@@ -121,20 +121,80 @@ $$
 $$
 
 $$
-\sum_{i=1}^{n}\beta_0 + \beta_1\cdot X_i = \sum_{i=1}^{n}E(\hat\beta_0 + \hat\beta_1\cdot X_i) \\
+\sum_{i=1}^{n}Y_i= \sum_{i=1}^{n}E(\hat\beta_0 + \hat\beta_1\cdot X_i) \\
 $$
 
 $$
-\sum_{i=1}^{n}\beta_0 + \beta_1\cdot X_i = \sum_{i=1}^{n}E(\hat\beta_0) + E(\hat\beta_1\cdot X_i) \\
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}E(\hat\beta_0) + E(\hat\beta_1\cdot X_i) \\
 $$
 
 $$
-\sum_{i=1}^{n}\beta_0 + \beta_1\cdot X_i = \sum_{i=1}^{n}\hat\beta_0 + \hat\beta_1\cdot E(X_i) \\
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat\beta_0 + \hat\beta_1\cdot E(X_i) \\
 $$
 
 $$
-\sum_{i=1}^{n}\beta_0 + \beta_1\cdot X_i = \sum_{i=1}^{n}\hat\beta_0 + \hat\beta_1\cdot X_i \\
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat\beta_0 + \hat\beta_1\cdot X_i \\
 $$
+Vale relembrar que 
+
+$$
+\hat\beta_1 = \frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \ \ \ \ \hat{\beta_0} = \bar{Y} - \hat{\beta_1}\bar{X}
+$$
+
+
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\bar{Y} - \hat{\beta_1}\bar{X} + \hat{\beta_1}\cdot X_i \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2}(\bar{Y} - \bar{X} + X_i) \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}\bar{Y} - \bar{X} + X_i}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}^2 - \bar{X} + X_i}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \\
+$$
+
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i Y_i+ X_i-n\bar{X}(\bar{Y}^2 - 1) }{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i (Y_i+ 1)-n\bar{X}(\bar{Y}^2 - 1) }{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \\
+$$
+Temos essa seguinte relacao
+$$
+\bar{X} = \frac{\sum_{i=1}^{n}X_i}{n} \\\\ \sum_{i=1}^{n}X_i = n\bar{X}
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i (Y_i+ 1)-\sum_{i=1}^{n}X_i(\bar{Y}^2 - 1) }{\sum_{i=1}^{n}X_i^2 - \sum_{i=1}^{n}X_i\bar{X}} \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i[(Y_i+ 1)-(\bar{Y}^2 - 1)]  }{\sum_{i=1}^{n}X_i[\sum_{i=1}^{n}X_i - \bar{X}]} \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{(Y_i+ 1)-(\bar{Y}^2 - 1)  }{\sum_{i=1}^{n}X_i - \bar{X}} \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{Y_i+ 1-\bar{Y}^2 - 1  }{\sum_{i=1}^{n}X_i - \bar{X}} \\
+$$
+
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{Y_i-(\frac{\sum_{i=1}^{n}Y_i}{n})^2 }{\sum_{i=1}^{n}X_i - \frac{\sum_{i=1}^{n}X_i}{n}} \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\frac{n^2Y_i-\sum_{i=1}^{n}Y_i^2}{n^2}}{\frac{n\sum_{i=1}^{n}X_i-\sum_{i=1}^{n}X_i}{n}} \\
+$$
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{Y_i-\sum_{i=1}^{n}Y_i^2}{\sum_{i=1}^{n}X_i-\sum_{i=1}^{n}X_i} \\
+$$
+
+$$
+\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{Y_i-\sum_{i=1}^{n}Y_i^2}{\sum_{i=1}^{n}X_i-\sum_{i=1}^{n}X_i} \\
+$$
+
+
+
+
 Como $\hat\beta_0$ e $\hat\beta_1$ sao estimadores de $\beta_0$ e $\beta_1$ entao voce tem os mesmoes elementos de cada lado!
 
 $$

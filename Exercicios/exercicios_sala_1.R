@@ -225,3 +225,55 @@ r = sqrt(r_2) #volta completa terminamos onde começamos
 
 
 ##### Diagnostico Regressão -----
+
+
+#estimação multipla de parametros com 95% de confiança a taxa de metabolismo
+
+
+#estimativa intervalar da média de Y dado um x
+alfa = 0.05
+x_escolhido = c(30,42,50)
+g = 3 #numeor de limites a serem estimados
+
+
+#calculo de s2 de scheffe
+
+s2 = g*qf(1-alfa,g,n-2)
+
+
+
+#calculo de B de bonferroni
+
+b = qt(1-(alfa)/(2*g),n-2)
+
+#calculo usando o erro padrao (verificar se esta correto) - scheffe
+y_new_hat <- beta_0 + beta_1*x_escolhido # Estimativa pontual da média de Y para o valor de X escolhido
+ic_lower <- y_new_hat - (s2/g)*sigma*sqrt(1 + (1/n) + ((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + (s2/g)*sigma*sqrt(1+(1/n)+((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
+
+cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
+cat("Intervalo de confiança de Scheffe para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
+
+#calculo usando o erro padrao (verificar se esta correto) - Bonferroni
+y_new_hat <- beta_0 + beta_1*x_escolhido # Estimativa pontual da média de Y para o valor de X escolhido
+ic_lower <- y_new_hat - b*sigma*sqrt(1 + (1/n) + ((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + b*sigma*sqrt(1+(1/n)+((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
+
+cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
+cat("Intervalo de confiança de Bonferroni para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
+
+
+
+
+h0 = (1/n) + ((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)
+
+sigma*sqrt(1 + h0) #formula correta e resultado "errado" (eu acho que ta certo kkkkk)
+
+sigma*(sqrt(h0)+1) #teoricamente esses sao os valores corretos
+#mas eu coloquei exatamente como a forma pediu e nao deu esses resultados
+
+
+
+
+
+

@@ -135,194 +135,114 @@ $$
 $$
 \sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat\beta_0 + \hat\beta_1\cdot X_i \\
 $$
-Vale relembrar que 
 
-$$
-\hat\beta_1 = \frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \ \ \ \ \hat{\beta_0} = \bar{Y} - \hat{\beta_1}\bar{X}
-$$
-
-
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\bar{Y} - \hat{\beta_1}\bar{X} + \hat{\beta_1}\cdot X_i \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2}(\bar{Y} - \bar{X} + X_i) \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}\bar{Y} - \bar{X} + X_i}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i Y_i-n\bar{X}\bar{Y}^2 - \bar{X} + X_i}{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \\
-$$
-
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i Y_i+ X_i-n\bar{X}(\bar{Y}^2 - 1) }{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i (Y_i+ 1)-n\bar{X}(\bar{Y}^2 - 1) }{\sum_{i=1}^{n}X_i^2 - n\bar{X}^2} \\
-$$
-Temos essa seguinte relacao
-$$
-\bar{X} = \frac{\sum_{i=1}^{n}X_i}{n} \\\\ \sum_{i=1}^{n}X_i = n\bar{X}
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i (Y_i+ 1)-\sum_{i=1}^{n}X_i(\bar{Y}^2 - 1) }{\sum_{i=1}^{n}X_i^2 - \sum_{i=1}^{n}X_i\bar{X}} \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\sum_{i=1}^{n}X_i[(Y_i+ 1)-(\bar{Y}^2 - 1)]  }{\sum_{i=1}^{n}X_i[\sum_{i=1}^{n}X_i - \bar{X}]} \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{(Y_i+ 1)-(\bar{Y}^2 - 1)  }{\sum_{i=1}^{n}X_i - \bar{X}} \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{Y_i+ 1-\bar{Y}^2 - 1  }{\sum_{i=1}^{n}X_i - \bar{X}} \\
-$$
-
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{Y_i-(\frac{\sum_{i=1}^{n}Y_i}{n})^2 }{\sum_{i=1}^{n}X_i - \frac{\sum_{i=1}^{n}X_i}{n}} \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{\frac{n^2Y_i-\sum_{i=1}^{n}Y_i^2}{n^2}}{\frac{n\sum_{i=1}^{n}X_i-\sum_{i=1}^{n}X_i}{n}} \\
-$$
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{Y_i-\sum_{i=1}^{n}Y_i^2}{\sum_{i=1}^{n}X_i-\sum_{i=1}^{n}X_i} \\
-$$
-
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\frac{Y_i-\sum_{i=1}^{n}Y_i^2}{\sum_{i=1}^{n}X_i-\sum_{i=1}^{n}X_i} \\
-$$
-
-
-
-
-Como $\hat\beta_0$ e $\hat\beta_1$ sao estimadores de $\beta_0$ e $\beta_1$ entao voce tem os mesmoes elementos de cada lado!
-
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat{Y_i} \\
-$$
 
 
 ##### $\sum_{i=1}^{n}e_i = 0$ onde $e_i = Y_i - \hat{Y_i}$
 
 Utilizando do resultado que encontramos anteriormente temos:
-$$
-\sum_{i=1}^{n}Y_i = \sum_{i=1}^{n}\hat{Y_i} \\
-$$
 
 $$
-\sum_{i=1}^{n}Y_i - \sum_{i=1}^{n}\hat{Y_i} = 0 \\ 
+\sum_{i=1}^{n}e_i = \sum_{i=1}^{n}(Y_i - \hat\beta_0 - \hat\beta_1 X_i)
 $$
+$$
+\sum_{i=1}^{n}(Y_i - \hat\beta_0 - \hat\beta_1 X_i) = \sum_{i=1}^{n}Y_i - n\hat\beta_0 - \hat\beta_1 \sum_{i=1}^{n}X_i
+$$
+Vale lembrar que $\bar{X} = \frac{\sum_{i=1}^n X_i}{n}$ que pode ser reescrito como: $\sum_{i=1}^n X_i = n\bar{X}$
+
 
 $$
-\sum_{i=1}^{n}Y_i - \hat{Y_i} = 0 \\ 
+\sum_{i=1}^{n}Y_i - n\hat\beta_0 - \hat\beta_1 \sum_{i=1}^{n}X_i = n\bar{Y} - n\hat\beta_0 - n\hat\beta_1\bar{X}
 $$
+$$
+ n\bar{Y} - n\hat\beta_0 - n\hat\beta_1\bar{X} = n( \bar{Y} - \hat\beta_0 - \hat\beta_1\bar{X})
+$$
+lembrando que $\hat\beta_0 = \bar{Y}-\hat\beta_1\bar{X}$
+
 
 $$
-\sum_{i=1}^{n}e_i = 0 \\
+n( \bar{Y} - \hat\beta_0 - \hat\beta_1\bar{X}) = n( \bar{Y} - (\bar{Y}-\hat\beta_1\bar{X})- \hat\beta_1\bar{X}) = 0
 $$
-
 
 ##### A reta de regressão estimada passa pelo centro de gravidade $(\bar{X},\bar{Y})$ no diagrama de dispersão $(X_i,Y_i)$.
 
-
 $$
-(\bar{X},\bar{Y}) = (E(X_i),E(Y_i)) = (X_i,E(\hat\beta_0 + \hat\beta_1\cdot X_i))
+\hat\beta_0 - \hat\beta_1\bar{X} = (\bar{Y}-\hat\beta_1\bar{X}) + \hat\beta_1\bar{X} = \bar{Y}
 $$
-$$
-(X_i,E(\hat\beta_0) + E(\hat\beta_1\cdot X_i)) = (X_i,\hat\beta_0 + \hat\beta_1\cdot E(X_i))
-$$
-$$
-(X_i,E(\hat\beta_0) + E(\hat\beta_1\cdot X_i)) = (X_i,\hat\beta_0 + \hat\beta_1\cdot X_i) = (X_i,Y_i)
-$$
-- verificar esse resultado nao sei se está certo -
 
 \newpage
 ##### $\sum_{i=1}^{n}X_i \cdot e_i = 0$
 
 $$
-\sum_{i=1}^{n}X_i \cdot e_i = 0
+\sum_{i=1}^{n}X_i e_i = \sum_{i=1}^{n}X_i (Y_i - \hat{Y_i}) = \sum_{i=1}^{n}X_i (Y_i - \hat\beta_0 - \hat\beta_1 X_i)
 $$
 $$
-\sum_{i=1}^{n}X_i \cdot (Y_i - \hat{Y_i}) = 0
+= \sum_{i=1}^{n}X_i (Y_i - (\bar{Y}-\hat\beta_1\bar{X})- \hat\beta_1X_i)
 $$
+Reorganizando e tirando fator comum
 $$
-\sum_{i=1}^{n}(X_iY_i - X_i\hat{Y_i}) = 0
-$$
-$$
-\sum_{i=1}^{n}X_iY_i - \sum_{i=1}^{n}X_i\hat{Y_i} = 0
-$$
-$$
-\sum_{i=1}^{n}X_i(\beta_0 + \beta_1\cdot X_i) - \sum_{i=1}^{n}X_i(\hat\beta_0 + \hat\beta_1\cdot X_i)  = 0
+= \sum_{i=1}^{n}X_i ((Y_i - \bar{Y})-\hat\beta_1(X_i - \bar{X}))
 $$
 
 $$
-\sum_{i=1}^{n}X_i\beta_0 + X_i\beta_1\cdot X_i - \sum_{i=1}^{n}(X_i\hat\beta_0 + X_i\hat\beta_1\cdot X_i)  = 0
-$$
-$$
-\sum_{i=1}^{n}X_i\beta_0 + X_i^2\beta_1 - \sum_{i=1}^{n}X_i\hat\beta_0 + X_i^2\hat\beta_1  = 0
-$$
-$$
-\sum_{i=1}^{n}X_i\beta_0 + \sum_{i=1}^{n}X_i^2\beta_1 - \sum_{i=1}^{n}X_i\hat\beta_0 + \sum_{i=1}^{n}X_i^2\hat\beta_1  = 0
-$$
-Como $\hat\beta_0$ e $\hat\beta_1$ sao estimadores de $\beta_0$ e $\beta_1$ entao voce pode reorganizar a conta para ter os mesmos elementos de cada lado!
-
-$$
-\sum_{i=1}^{n}X_i\beta_0 + \sum_{i=1}^{n}X_i^2\beta_1 = \sum_{i=1}^{n}X_i\hat\beta_0 + \sum_{i=1}^{n}X_i^2\hat\beta_1  
-$$
-Logo:
-
-
-$$
-\sum_{i=1}^{n}X_i\beta_0 + \sum_{i=1}^{n}X_i^2\beta_1 = \sum_{i=1}^{n}X_i\hat\beta_0 + \sum_{i=1}^{n}X_i^2\hat\beta_1 
-$$
-$$
-\sum_{i=1}^{n}X_iY_i = \sum_{i=1}^{n}X_i\hat{Y_i} 
+= \sum_{i=1}^{n}X_i ((Y_i - \bar{Y})-\hat\beta_1(X_i - \bar{X}))
 $$
 
+$$
+= \sum_{i=1}^{n} X_i(Y_i - \bar{Y})-\hat\beta_1\sum_{i=1}^{n}X_i(X_i - \bar{X})
+$$
+Vale notar de que no caso de centralizarmos (subtrair a media centralizando em torno do 0) $X_i$ temos:
+
+$$
+\hat\beta_1 = \frac{\sum_{i=1}^n(X_i-\bar{X})(Y_i-\bar{Y})}{\sum_{i=1}^n(X_i - \bar{X})^2} = \frac{\sum_{i=1}^nX_i(Y_i-\bar{Y})}{\sum_{i=1}^n(X_i - \bar{X})^2}
+$$
+podemos chegar a seguinte formula e substituir na conta:
+
+$$
+\sum_{i=1}^nX_i(Y_i-\bar{Y}) = \hat\beta_1\sum_{i=1}^n(X_i - \bar{X})^2
+$$
+$$
+= \hat\beta_1\sum_{i=1}^n(X_i - \bar{X})^2-\hat\beta_1\sum_{i=1}^{n}X_i(X_i - \bar{X})
+$$
+$$
+= \hat\beta_1\sum_{i=1}^n[(X_i - \bar{X})^2 - X_i(X_i - \bar{X})]
+$$
+$$
+= \hat\beta_1\sum_{i=1}^n[X_i^2 -2 X_i \bar{X}+\bar{X^2} - X_i^2+X_i\bar{X}]
+$$
+$$
+= \hat\beta_1\sum_{i=1}^n[\bar{X^2}-X_i\bar{X}]
+$$
+
+$$
+=\bar{X}\hat\beta_1\sum_{i=1}^n(\bar{X}-X_i) = 0
+$$
 \newpage
 
 ##### $\sum_{i=1}^{n}Y_i \cdot e_i = 0$
 
 $$
-\sum_{i=1}^{n}Y_i \cdot e_i = 0
+\sum_{i=1}^{n}Y_i e_i = \sum_{i=1}^{n}Y_i (Y_i - \hat{Y_i}) = \sum_{i=1}^{n}Y_i (Y_i - \hat\beta_0 - \hat\beta_1 X_i)
+$$
+$$
+= \sum_{i=1}^{n}Y_i (Y_i - (\bar{Y}-\hat\beta_1\bar{X})- \hat\beta_1X_i)
+$$
+Reorganizando e tirando fator comum
+$$
+= \sum_{i=1}^{n}Y_i ((Y_i - \bar{Y})-\hat\beta_1(X_i - \bar{X}))
 $$
 
 $$
-\sum_{i=1}^{n}Y_i \cdot (Y_i - \hat{Y_i}) = 0
+= \sum_{i=1}^{n}Y_i ((Y_i - \bar{Y})-(\frac{\sum_{i=1}^n(X_i-\bar{X})(Y_i-\bar{Y})}{\sum_{i=1}^n(X_i - \bar{X})^2})(X_i - \bar{X}))
+$$
+$$
+= \sum_{i=1}^{n}Y_i (Y_i - \bar{Y})-(\frac{\sum_{i=1}^n(X_i-\bar{X})(Y_i-\bar{Y})}{\sum_{i=1}^n(X_i - \bar{X})})
+$$
+$$
+= \sum_{i=1}^{n}Y_i ((X_i - \bar{X})(Y_i - \bar{Y})-(\frac{\sum_{i=1}^n(X_i-\bar{X})(Y_i-\bar{Y})}{\sum_{i=1}^n(X_i - \bar{X})})
 $$
 
 $$
-\sum_{i=1}^{n}Y_iY_i - Y_i\hat{Y_i} = 0
+= \frac{\sum_{i=1}^{n}Y_i (X_i - \bar{X})(Y_i - \bar{Y})-(X_i-\bar{X})(Y_i-\bar{Y})}{\sum_{i=1}^n(X_i - \bar{X})} = \frac{\sum_{i=1}^{n}[(X_i-\bar{X})(Y_i-\bar{Y})](Y_i - 1)}{\sum_{i=1}^n(X_i - \bar{X})} 
 $$
-
-$$
-\sum_{i=1}^{n}Y_i^2 - Y_i\hat{Y_i} = 0
-$$
-
-$$
-\sum_{i=1}^{n}Y_i^2 - (\beta_0 + \beta_1\cdot X_i)({\hat\beta_0 + \hat\beta_1\cdot X_i}) = 0
-$$
-
-$$
-\sum_{i=1}^{n}Y_i^2 - ({\hat\beta_0\beta_0 +\beta_0\hat\beta_1X_i+\hat\beta_0\beta_1 X_i}+\beta_1X_i\hat\beta_1X_i) = 0
-$$
-
-Como $\hat\beta_0$ e $\hat\beta_1$ sao estimadores de $\beta_0$ e $\beta_1$ entao voce pode reorganizar a conta para ter os mesmos elementos de cada lado!
-
-
-$$
-\sum_{i=1}^{n}Y_i^2 - \sum_{i=1}^{n}(\beta_0^2 +2(\beta_0\beta_1X_i)+\beta_1^2X_i^2) = 0
-$$
-
-$$
-\sum_{i=1}^{n}Y_i^2 = \sum_{i=1}^{n}(\beta_0^2 +2(\beta_0\beta_1X_i)+\beta_1^2X_i^2) 
-$$
-
-Sabemos que $\beta_0^2 +2(\beta_0\beta_1X_i)+\beta_1^2X_i^2 = Y_i\hat{Y_i}$
-
-$$
-\sum_{i=1}^{n}Y_i^2 = \sum_{i=1}^{n}Y_i\hat{Y_i}
-$$
-
-
-
+verificar desenvolvimento errei em algum lugar

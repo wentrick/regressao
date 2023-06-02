@@ -1,0 +1,70 @@
+---
+title: "Exercicio Regressao Multipla Sala"
+author: "Davi Wentrick Feijó - 200016806"
+date: "2023-06-02"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(tidyverse,Matrix,knitr)
+options(knitr.table.format = "html")
+```
+
+### Regressao Linear Multipla
+
+Vamos usar esses dados:
+```{r echo=FALSE}
+#modelo linear multiplo
+area = c(1:15)
+safra_de_trigo = c(40,38,50,49,50,55,70,55,45,65,72,70,65,80,75)
+fertilizante = c(100,150,200,250,300,350,400,410,450,500,550,600,650,700,800)
+chuva = c(10,10,20,20,10,20,30,20,10,20,20,30,20,30,30)
+
+dados = data.frame(area,safra_de_trigo,fertilizante,chuva)
+```
+
+
+```{r echo=FALSE}
+kable(dados,col.names = c('Area', 'Safra de Trigo', 'Fertilizante', 'Chuva')) %>%
+  kable_styling()
+```
+
+#### Especificar os elementos dos vetores e matrizes do problema 
+
+```{r}
+n <- nrow(dados) # Number of observations
+n
+```
+
+
+Nosso Y será a safra de trigo:
+
+```{r echo=FALSE}
+Y <- dados$safra_de_trigo
+Y <- as.matrix(Y)
+Y
+```
+
+
+E o X será o fertilizante e o indice de chuvas:
+
+```{r echo=FALSE}
+X <- cbind(dados$fertilizante,dados$chuva)
+X
+```
+
+podemos adicionar na matriz X o vetor de 1 para ser nosso intecepto.
+
+```{r}
+X <- cbind(rep(1,n), X) 
+X                     
+```
+
+
+
+
+

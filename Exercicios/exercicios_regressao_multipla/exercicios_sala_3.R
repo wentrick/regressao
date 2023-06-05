@@ -59,7 +59,7 @@ sse
 sse = t(Y) %*% Y - t(beta) %*% t(X) %*% Y
 sse
 
-sse/(n-2)
+mse = sse/(n-2)
 
 #matriz de covariancias
 C = (solve(t(X) %*% X)) %*% t(X)
@@ -69,13 +69,21 @@ beta = C %*% Y
 beta
 
 #variancia de beta (matriz de covariancias estimadas)
-
 v_beta = as.numeric(mse) * XTX_inv #tive que transforma em numerico pq o resultado era uma matriz 1x1 e tava dando erro
 v_beta
-#variancia de Y
 
+#variancia de Y
 v_Y = mse * identity(2)
 
+#estiamção pontual
+xh = c(1,500,25)
+yh = xh %*% beta
+m = 4
+alfa = 0.10
+t_value = qt(1-alfa/2,n-2)
 
+xh %*% XTX_inv %*% xh
 
-
+ic_sup = yh + t_value * sqrt(mse*((1/m)+(xh %*% XTX_inv %*% xh)))
+ic_inf = yh - t_value * sqrt(mse*((1/m)+(xh %*% XTX_inv %*% xh)))
+cat("Intervalo de confiança para",xh,": [", ic_inf, ", ", ic_sup, "]\n")

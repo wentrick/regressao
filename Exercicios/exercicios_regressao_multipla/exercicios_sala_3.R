@@ -19,6 +19,8 @@ Y <- dados$safra_de_trigo
 Y <- as.matrix(Y) 
 Y   
 
+J = matrix(data = 1, nrow = n, ncol = n)
+J
 #intercepto
 X <- cbind(rep(1,n), X) # Adding a column of ones to make the X matrix
 X                       # This is your X matrix
@@ -51,10 +53,16 @@ Yhat
 e <- Y - Yhat # Residuals
 e
 
-#estimador da variancia residual
-sse = t(e) %*% e
+#Fontes de variação
+
+sse = t(e) %*% e #soma de quadrados do residuo
 sse
 
+ssr = t(beta) %*% t(X) %*% Y - (1/n) * (t(Y) %*% J %*% Y) #soma de quadrados da regressao
+ssr
+
+sst = ssr +sse  #soma de quadrados total
+sst
 #outra forma de estimação do parametro
 sse = t(Y) %*% Y - t(beta) %*% t(X) %*% Y
 sse
@@ -67,6 +75,7 @@ C
 
 beta = C %*% Y
 beta
+
 
 #variancia de beta (matriz de covariancias estimadas)
 v_beta = as.numeric(mse) * XTX_inv #tive que transforma em numerico pq o resultado era uma matriz 1x1 e tava dando erro
@@ -87,3 +96,8 @@ xh %*% XTX_inv %*% xh
 ic_sup = yh + t_value * sqrt(mse*((1/m)+(xh %*% XTX_inv %*% xh)))
 ic_inf = yh - t_value * sqrt(mse*((1/m)+(xh %*% XTX_inv %*% xh)))
 cat("Intervalo de confiança para",xh,": [", ic_inf, ", ", ic_sup, "]\n")
+
+
+
+
+

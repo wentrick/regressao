@@ -263,14 +263,21 @@ cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
 cat("Intervalo de confiança de Bonferroni para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
 
 
+#regiao de confiança para superficie de regressao
+
+x_h = 4
+  
+w = 2*(qf(1-alfa,2,n-2))
+
+y_h = beta_0 + beta_1*x_h
+
+ic_superficie_inf = y_h - w*sigma*sqrt(1 + (1/n) + ((x_h - x_barra)^2)/(x_quadrado - n*x_barra^2))
+
+ic_superficie_sup = y_h + w*sigma*sqrt(1 + (1/n) + ((x_h - x_barra)^2)/(x_quadrado - n*x_barra^2))
 
 
-h0 = (1/n) + ((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)
-
-sigma*sqrt(1 + h0) #formula correta e resultado "errado" (eu acho que ta certo kkkkk)
-
-sigma*(sqrt(h0)+1) #teoricamente esses sao os valores corretos
-#mas eu coloquei exatamente como a forma pediu e nao deu esses resultados
+cat("O valor estimado Yh quando Xh=", x_h, "é:",y_h)
+cat("Intervalo de confiança de Bonferroni para a média de Y quando X =", x_h, ": [", ic_superficie_inf, ",", ic_superficie_sup, "]")
 
 
 

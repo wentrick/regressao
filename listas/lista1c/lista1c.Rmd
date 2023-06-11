@@ -46,7 +46,7 @@ cor.test(xi, yi, method = "pearson") #traz o coeficiente e o p-valor
 
 #### c) Modele o estudo acima, especificando a unidade de informação, o tipo de estudo, a variável resposta e a variável explicativa e a hipótese de trabalho.
 
-
+A unidade de informacao sao as caixas com ampolas, o tipo de estudo é observacional, a variavel resposta é a quantidade de ampolas quebradas e a variavel explicativa é o número de transferencias.
 
 \newpage
 
@@ -309,17 +309,78 @@ cat("Intervalo de confiança para a média de Y quando X =", x_escolhido, ": [",
 ```
 
 
+#### 2) As estimativas obtidas para os parâmetros do MRLS ajustado aos dados do exercício 1 são, respectivamente, 10.20 e 4.00 e $\sum_{i}e_i = 17.60$ consequentemente. Determine o valor do criterio de mínimo quadrado $Q = \sum_{i=1}^{n}(Y_i-\beta_0 - \beta_1X_i)^2$ para as seguintes estimativas:
+
+a) $\hat\beta_0 = 9$ e $\hat\beta_1 = 3$
+b) $\hat\beta_0 = 11$ e $\hat\beta_1 = 5$
+
+O valor do critério Q é maior do que para as estimativas de Mínimos Quadrados? Justifique sua resposta.
 
 
+```{r echo=FALSE}
+Qa = sum(dados$yi - 9 - 3*dados$xi)
+Qb = sum(dados$yi - 11 - 5*dados$xi)
+```
+
+```{r echo=FALSE}
+cat("O valor Q com Beta 0 = 9 e Beta 1 = 3 é:",Qa)
+cat("O valor Q com Beta 0 = 11 e Beta 1 = 5 é:",Qb)
+```
 
 
+O valor Q é maior que a estimativa de minimos quadrados pois a estimativa é um minimo!
 
 
+### Dando continuidade ao estudo realizado no Exercício 1:
+
+#### a) Determine os valores limites da faixa de confiança de 99% para a linha de regressão quando Xh=2 e quando Xh=4. A sua faixa de confiança é mais ampla nestes dois pontos do que os correspondentes intervalos de confiança calculados no item e.? Ela deveria ser?
+
+```{r}
+#regiao de confiança para superficie de regressao
+sigma = sqrt(sigma_quadrado_erro)
+
+x_h = 4
+  
+w = 2*(qf(1-alfa,2,n-2))
+
+y_h = beta_0 + beta_1*x_h
+
+s_pred = sigma*sqrt(1 + (1/n) + ((x_h - x_barra)^2)/(x_quadrado - n*x_barra^2))
+
+ic_superficie_inf = y_h - w * s_pred
+
+ic_superficie_sup = y_h + w * s_pred
 
 
+cat("O valor estimado Yh quando Xh=", x_h, "e:",y_h)
+cat("Intervalo de confiança de Bonferroni para a média de Y quando X =", x_h, ": [", ic_superficie_inf, ",", ic_superficie_sup, "]")
+
+```
 
 
+#### b) Faça a ANOVA.
 
+```{r}
+reg = lm(yi ~ xi, data = dados)
+anova_reg = aov(reg)
+summary(anova_reg)
+```
+
+
+#### c) Teste ausência de regressão usando o teste F a um nível se significância de 0,05.
+
+```{r}
+
+```
+
+
+##### i) Construa o quadro de ANOVA. Quais elementos são aditivos?
+
+##### ii) Formule as hipóteses, regra de decisão e conclusão.
+
+#### d) Verifique o valor da estatística t obtida para o teste realizado no item n do exercício 1 e mostre numericamente sua equivalência com a estatística F* obtida no item c deste exercício.
+
+#### e) Calcule r2 e r. Qual a proporção da variação em Y é atribuída pela introdução da variável X no modelo de regressão?
 
 
 

@@ -8,6 +8,9 @@ chuva = c(10,10,20,20,10,20,30,20,10,20,20,30,20,30,30)
 dados = data.frame(area,safra_de_trigo,fertilizante,chuva)
 dados
 
+
+colnames(dados)
+
 #nossas variaveis
 
 n <- nrow(dados) # Number of observations
@@ -68,7 +71,7 @@ sse = t(Y) %*% Y - t(beta) %*% t(X) %*% Y
 sse
 
 mse = sse/(n-2)
-
+mse
 #matriz de covariancias
 C = (solve(t(X) %*% X)) %*% t(X)
 C
@@ -97,7 +100,47 @@ ic_sup = yh + t_value * sqrt(mse*((1/m)+(xh %*% XTX_inv %*% xh)))
 ic_inf = yh - t_value * sqrt(mse*((1/m)+(xh %*% XTX_inv %*% xh)))
 cat("Intervalo de confiança para",xh,": [", ic_inf, ", ", ic_sup, "]\n")
 
+#rodando direto no r
+p = length(beta)
+#soma de quadrados extra
+
+modelo_completo = lm(safra_de_trigo ~ fertilizante + chuva ,data = dados)
+modelo_1 = lm(safra_de_trigo ~ fertilizante ,data = dados)
+modelo_2 = lm(safra_de_trigo ~ chuva*fertilizante ,data = dados)
+
+summary(modelo_completo)
+anova(modelo_completo)
+
+#find sse
+sse <- sum((fitted(modelo_completo) - dados$safra_de_trigo)^2)
+sse
+
+#find ssr
+ssr <- sum((fitted(modelo_completo) - mean(dados$safra_de_trigo))^2)
+ssr
+
+#find sst
+sst <- ssr + sse
+sst
+
+#r squared
+
+r2 = ssr / sst
+r2
+
+#SSR(X2|X1)
+ssr1 <- sum((fitted(modelo_1) - mean(dados$safra_de_trigo))^2)
+
+ssrx1x2 = ssr - ssr1
 
 
+#tabela anova na mao
+anova_table <- data.frame(Fonte_de_variacao = c("Regressao", "X1", "X2|X1","Residuos", "Total"),
+                          GL = c(3,1,1,n-4, n-1),
+                          SS = c(ssr,ssr1 ,ssrx1x2 ,sse, sst),
+                          MQ = c(round(ssr/3,p-1),round(ssr1,2) ,round(ssrx1x2,2), round(sse/(n-p),2), ''),
+                          stringsAsFactors = FALSE)
+rownames(anova_table) <- NULL
 
+anova_table
 

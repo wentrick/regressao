@@ -1,5 +1,6 @@
 pacman::p_load(tidyverse,Matrix,readxl)
 
+library(kableExtra)
 #modelo linear multiplo - dados gordura
 dados <- read_excel("dados/gordura.xlsx")
 

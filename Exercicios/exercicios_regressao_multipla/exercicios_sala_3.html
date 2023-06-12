@@ -1631,236 +1631,11 @@ display: none;
 <div id="regressao-linear-multipla" class="section level3">
 <h3>Regressao Linear Multipla</h3>
 <p>Vamos usar esses dados:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:right;">
-Area
-</th>
-<th style="text-align:right;">
-Safra de Trigo
-</th>
-<th style="text-align:right;">
-Fertilizante
-</th>
-<th style="text-align:right;">
-Chuva
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-40
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-38
-</td>
-<td style="text-align:right;">
-150
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-50
-</td>
-<td style="text-align:right;">
-200
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-49
-</td>
-<td style="text-align:right;">
-250
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-50
-</td>
-<td style="text-align:right;">
-300
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-55
-</td>
-<td style="text-align:right;">
-350
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-70
-</td>
-<td style="text-align:right;">
-400
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-55
-</td>
-<td style="text-align:right;">
-410
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-45
-</td>
-<td style="text-align:right;">
-450
-</td>
-<td style="text-align:right;">
-10
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-65
-</td>
-<td style="text-align:right;">
-500
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:right;">
-72
-</td>
-<td style="text-align:right;">
-550
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-12
-</td>
-<td style="text-align:right;">
-70
-</td>
-<td style="text-align:right;">
-600
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:right;">
-65
-</td>
-<td style="text-align:right;">
-650
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-14
-</td>
-<td style="text-align:right;">
-80
-</td>
-<td style="text-align:right;">
-700
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:right;">
-75
-</td>
-<td style="text-align:right;">
-800
-</td>
-<td style="text-align:right;">
-30
-</td>
-</tr>
-</tbody>
-</table>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Area"],"name":[1],"type":["int"],"align":["right"]},{"label":["Safra de Trigo"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Fertilizante"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Chuva"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"40","3":"100","4":"10"},{"1":"2","2":"38","3":"150","4":"10"},{"1":"3","2":"50","3":"200","4":"20"},{"1":"4","2":"49","3":"250","4":"20"},{"1":"5","2":"50","3":"300","4":"10"},{"1":"6","2":"55","3":"350","4":"20"},{"1":"7","2":"70","3":"400","4":"30"},{"1":"8","2":"55","3":"410","4":"20"},{"1":"9","2":"45","3":"450","4":"10"},{"1":"10","2":"65","3":"500","4":"20"},{"1":"11","2":"72","3":"550","4":"20"},{"1":"12","2":"70","3":"600","4":"30"},{"1":"13","2":"65","3":"650","4":"20"},{"1":"14","2":"80","3":"700","4":"30"},{"1":"15","2":"75","3":"800","4":"30"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <div id="especificar-os-elementos-dos-vetores-e-matrizes-do-problema" class="section level4">
 <h4>Especificar os elementos dos vetores e matrizes do problema</h4>
 <pre class="r"><code>n &lt;- nrow(dados) # Number of observations
@@ -1920,6 +1695,153 @@ X                     </code></pre>
 ## [13,]    1  650   20
 ## [14,]    1  700   30
 ## [15,]    1  800   30</code></pre>
+<p>Vamos definir nossa matris J que sera com composta inteiramente por 1
+e sera <span class="math inline">\(n \times n\)</span> (n sendo o numero
+de observacoes)</p>
+<pre class="r"><code>J = matrix(data = 1, nrow = n, ncol = n)
+J</code></pre>
+<pre><code>##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+##  [1,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##  [2,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##  [3,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##  [4,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##  [5,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##  [6,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##  [7,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##  [8,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##  [9,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+## [10,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+## [11,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+## [12,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+## [13,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+## [14,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+## [15,]    1    1    1    1    1    1    1    1    1     1     1     1     1
+##       [,14] [,15]
+##  [1,]     1     1
+##  [2,]     1     1
+##  [3,]     1     1
+##  [4,]     1     1
+##  [5,]     1     1
+##  [6,]     1     1
+##  [7,]     1     1
+##  [8,]     1     1
+##  [9,]     1     1
+## [10,]     1     1
+## [11,]     1     1
+## [12,]     1     1
+## [13,]     1     1
+## [14,]     1     1
+## [15,]     1     1</code></pre>
+<p>Agora podemos encontrar nosso vetor de Betas sabendo que ele pode ser
+calculado da seguinte forma:</p>
+<p><span class="math display">\[
+\beta = (X^TX)^{-1}X^TY
+\]</span></p>
+<pre class="r"><code>#encontrando XTX
+
+XTX = t(X) %*% X
+XTX</code></pre>
+<pre><code>##      [,1]    [,2]   [,3]
+## [1,]   15    6410    300
+## [2,] 6410 3343100 143200
+## [3,]  300  143200   6800</code></pre>
+<pre class="r"><code>#encontrando XTY
+
+XTY = t(X) %*% Y
+XTY</code></pre>
+<pre><code>##        [,1]
+## [1,]    879
+## [2,] 409350
+## [3,]  18800</code></pre>
+<pre class="r"><code>#encontrando a inversa de XTX
+
+XTX_inv = solve(XTX)
+XTX_inv</code></pre>
+<pre><code>##               [,1]          [,2]          [,3]
+## [1,]  0.5751552282 -1.622018e-04 -2.195872e-02
+## [2,] -0.0001622018  3.099398e-06 -5.811371e-05
+## [3,] -0.0219587160 -5.811371e-05  2.339632e-03</code></pre>
+<pre class="r"><code>#encnontrando a matriz de parametros Beta (ela contem o Beta 0 e o Beta 1 ou todos os beta no caso de uma regressao multipla)
+
+beta = XTX_inv %*% t(X) %*% Y #em partes
+
+beta = solve(t(X) %*% X) %*% t(X) %*% Y #direto
+
+beta</code></pre>
+<pre><code>##             [,1]
+## [1,] 26.34027254
+## [2,]  0.03362537
+## [3,]  0.89452440</code></pre>
+<p>Com a matriz de betas podemos ajustar os valores esperados do modelo
+<span class="math inline">\(\hat Y\)</span>:</p>
+<pre class="r"><code>#valores estimados pelo modelo (y chapeu)
+Yhat &lt;- X %*% beta # Fitted Values
+Yhat</code></pre>
+<pre><code>##           [,1]
+##  [1,] 38.64805
+##  [2,] 40.32932
+##  [3,] 50.95583
+##  [4,] 52.63710
+##  [5,] 45.37313
+##  [6,] 55.99964
+##  [7,] 66.62615
+##  [8,] 58.01716
+##  [9,] 50.41693
+## [10,] 61.04344
+## [11,] 62.72471
+## [12,] 73.35122
+## [13,] 66.08725
+## [14,] 76.71376
+## [15,] 80.07630</code></pre>
+<p>Em seguida podemos calcular nossos residuos</p>
+<pre class="r"><code>#residuos do modelo
+e &lt;- Y - Yhat # Residuals
+e</code></pre>
+<pre><code>##             [,1]
+##  [1,]  1.3519469
+##  [2,] -2.3293213
+##  [3,] -0.9558336
+##  [4,] -3.6371019
+##  [5,]  4.6268738
+##  [6,] -0.9996384
+##  [7,]  3.3738493
+##  [8,] -3.0171603
+##  [9,] -5.4169310
+## [10,]  3.9565568
+## [11,]  9.2752885
+## [12,] -3.3512237
+## [13,] -1.0872480
+## [14,]  3.2862397
+## [15,] -5.0762968</code></pre>
+<p>Podemos realizar a ANOVA do modelo para isso precisaremos calcular as
+seguintes somas de quadrados</p>
+<ul>
+<li>Soma de quadrados da regressao (SSR ou SQR)
+<ul>
+<li><span class="math inline">\(\hat{\beta}^TX^TY-\frac{1}{n}Y^TJY\)</span></li>
+</ul></li>
+<li>Soma de quadrados do residuo (SSE ou SQE)
+<ul>
+<li><span class="math inline">\(\varepsilon^T\varepsilon\)</span> ou
+<span class="math inline">\(Y^TY-\hat{\beta}^TX^TY\)</span></li>
+</ul></li>
+<li>Soma de quadrados total (SST ou SQT)
+<ul>
+<li><span class="math inline">\(SSE+SSR\)</span></li>
+</ul></li>
+</ul>
+<pre class="r"><code>sse = t(e) %*% e #soma de quadrados do residuo
+sse</code></pre>
+<pre><code>##          [,1]
+## [1,] 244.2984</code></pre>
+<pre class="r"><code>ssr = t(beta) %*% t(X) %*% Y - (1/n) * (t(Y) %*% J %*% Y) #soma de quadrados da regressao
+ssr</code></pre>
+<pre><code>##          [,1]
+## [1,] 2225.302</code></pre>
+<pre class="r"><code>sst = ssr +sse  #soma de quadrados total
+sst</code></pre>
+<pre><code>##        [,1]
+## [1,] 2469.6</code></pre>
 </div>
 </div>
 

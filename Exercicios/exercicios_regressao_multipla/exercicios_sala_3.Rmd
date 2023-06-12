@@ -104,7 +104,6 @@ beta = solve(t(X) %*% X) %*% t(X) %*% Y #direto
 beta
 ```
 
-
 Com a matriz de betas podemos ajustar os valores esperados do modelo $\hat Y$:
 
 ```{r}
@@ -259,5 +258,60 @@ modelo_completo = lm(safra_de_trigo ~ fertilizante + chuva ,data = dados)
 anova(modelo_completo)
 ```
 
+
+Estimador da variancia residual
+
+$$
+\hat\sigma^2 = \frac{\sum^n_{i=1}e_i^2}{n-p} = \frac{SSE}{n-p} = MSE
+$$
+$$
+MSE = \frac{Y^TY-\hat\beta^TX^TY}{n-p}
+$$
+
+
+```{r}
+mse
+```
+
+
+Podemos calcular a $V(\hat\beta)$, que será uma matriz de covariancias onde a diagonal tera as variancias dos betas, utilizando a seguinte formula:
+
+$$
+V(\hat\beta) = \hat\sigma^2(X^TX)^{-1}
+$$
+```{r}
+var_beta = as.numeric(mse) * solve(t(X)%*%X) #tive que colocar como numerico 
+                                             #pois o r entende que é uma matriz 1x1
+round(var_beta,4)
+
+round(diag(var_beta),4)
+```
+
+### Intervalos de Confianca para $\beta_k$
+
+
+Sabemos que podem ser calculados por meio das seguintes formulas:
+
+$$
+\frac{\hat\beta_k - \beta_k}{S(\hat\beta_k)} \sim \text{Student com (n-p) g.l}
+$$
+
+O intervalo de confiança $(1-\alpha)$ pode ser escrito como:
+
+$$
+\beta_k \in (\hat\beta_k \mp t_{1-\alpha/2}S(\hat\beta_k))
+$$
+onde:
+
+$$
+S(\hat\beta_k) = \sqrt{V(\beta_k)}
+$$
+Vamos calcular o intervalo de confianca de 90% para $\beta_1$
+
+```{r}
+alfa = 0.10
+#t_value = qt(1-(alfa/2))
+
+```
 
 

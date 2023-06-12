@@ -1914,6 +1914,30 @@ anova(modelo_completo)</code></pre>
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sum Sq"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Mean Sq"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"1883.2931","3":"1883.2931","4":"92.50784","5":"5.445579e-07","_rn_":"fertilizante"},{"1":"1","2":"342.0084","3":"342.0084","4":"16.79954","5":"1.475727e-03","_rn_":"chuva"},{"1":"12","2":"244.2984","3":"20.3582","4":"NA","5":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<p>Estimador da variancia residual</p>
+<p><span class="math display">\[
+\hat\sigma^2 = \frac{\sum^n_{i=1}e_i^2}{n-p} = \frac{SSE}{n-p} = MSE
+\]</span> <span class="math display">\[
+MSE = \frac{Y^TY-\hat\beta^TX^TY}{n-p}
+\]</span></p>
+<pre class="r"><code>mse</code></pre>
+<pre><code>##         [,1]
+## [1,] 20.3582</code></pre>
+<p>Podemos calcular a <span class="math inline">\(V(\hat\beta)\)</span>,
+que será uma matriz de covariancias onde a diagonal tera as variancias
+dos betas, utilizando a seguinte formula:</p>
+<p><span class="math display">\[
+V(\hat\beta) = \hat\sigma^2(X^TX)^{-1}
+\]</span></p>
+<pre class="r"><code>var_beta = as.numeric(mse) * solve(t(X)%*%X) #tive que colocar como numerico 
+                                             #pois o r entende que é uma matriz 1x1
+round(var_beta,4)</code></pre>
+<pre><code>##         [,1]    [,2]    [,3]
+## [1,] 11.7091 -0.0033 -0.4470
+## [2,] -0.0033  0.0001 -0.0012
+## [3,] -0.4470 -0.0012  0.0476</code></pre>
+<pre class="r"><code>round(diag(var_beta),4)</code></pre>
+<pre><code>## [1] 11.7091  0.0001  0.0476</code></pre>
 </div>
 </div>
 

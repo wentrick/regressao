@@ -154,16 +154,109 @@ Onde $n$ é o número de observacoes e $p$ o número de parametros (variaveis) d
 ```{r}
 p = length(beta)
 ```
+Vamos obter os graus de liberdade da regressao, residuo e total
+
+```{r}
+glreg = p-1
+glres = n-p
+gltot = n-1
+```
+
+```{r echo=FALSE}
+cat("A quantiade de graus de liberdade relacionado a regressao é:",glreg)
+cat("A quantiade de graus de liberdade relacionado aos residuos é:",glres)
+cat("A quantiade de graus de liberdade relacionado ao total é:",gltot)
+```
+
 
 
 ```{r}
-mse = sse/(p-1)
-mse
+msr = ssr/(p-1)
+msr
 ```
 
 ```{r}
-msr = ssr/(n-p)
-msr
+mse = sse/(n-p)
+mse
+```
+Vamos calcular nosso $R^2$:
+
+```{r}
+r2 = ssr / sst
+r2
+```
+
+
+
+Vamos calcular a soma de quadrados extra, para isso vamos ajustar um modelo somente com a variavel fertilizante e ver quanto ela explica por si só e quato que adicionar a variavel chuva vai incrementar nessa explicação. Para agilizar vamos calcular usando o a função lm()
+
+```{r}
+modelo_1 = lm(safra_de_trigo ~ fertilizante ,data = dados)
+ssr1 <- sum((fitted(modelo_1) - mean(dados$safra_de_trigo))^2)
+
+ssrx1x2 = ssr - ssr1
+```
+
+Podemos aproveitar esses calculos para encontrar o coeficiente de determinação parcial:
+
+$$
+R^2_{Y 2|1} = \frac{SSR(X1|X2)}{SSE(X2)}
+$$
+
+```{r}
+modelo_2 = lm(safra_de_trigo ~ chuva ,data = dados)
+sse2 <- sum((fitted(modelo_2) - dados$safra_de_trigo)^2)
+
+r2_x2x1 = ssrx1x2/sse2
+r2_x2x1
+```
+
+Em seguida podemos calcular os valores F observados:
+
+```{r}
+f_value_reg = msr/mse
+f_value_reg
+f_value_x1 = ssr1/mse
+f_value_x1
+f_value_x1x2 = ssrx1x2/mse
+f_value_x1x2
+```
+
+Vamos calcular os p-valores do teste F
+
+```{r}
+p_value_reg = pf(f_value_reg,glreg,glres,lower.tail = F)
+p_value_x1 = pf(f_value_x1,1,glres,lower.tail = F)
+p_value_x1x2 = pf(f_value_x1x2,1,glres,lower.tail = F)
+```
+
+```{r echo=FALSE}
+cat("O p-valor do teste F da Regressao completa é:",p_value_reg)
+cat("O p-valor do teste F da Regressao com X1 é:",p_value_x1)
+cat("O p-valor do teste F da Regressao com a adicção de X2 em X1:",p_value_x1x2)
+```
+
+
+
+Podemos apresentar nossa tabela da anova
+```{r echo=FALSE}
+#tabela anova na mao
+anova_table <- data.frame(Fonte_de_variacao = c("Regressao","X1","X1|X2","Residuos", "Total"),
+                          GL = c(glreg,1,1,glres,gltot),
+                          SS = c(ssr,ssr1,ssrx1x2,sse,sst),
+                          MQ = c(round(msr,2),round(ssr1/1,2),round(ssrx1x2/1,2),round(mse,2), ''),
+                          F_Value = c(round(f_value_reg,4),round(f_value_x1,4),round(f_value_x1x2,4),"",""),
+                          F_Value = c(round(p_value_reg,10),round(p_value_x1,10),round(p_value_x1x2,6),"",""),
+                          stringsAsFactors = FALSE)
+rownames(anova_table) <- NULL
+
+anova_table
+```
+Vamos comparar com a anova do R:
+
+```{r}
+modelo_completo = lm(safra_de_trigo ~ fertilizante + chuva ,data = dados)
+anova(modelo_completo)
 ```
 
 

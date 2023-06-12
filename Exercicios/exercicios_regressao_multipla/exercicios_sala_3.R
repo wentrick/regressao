@@ -106,7 +106,6 @@ p = length(beta)
 
 modelo_completo = lm(safra_de_trigo ~ fertilizante + chuva ,data = dados)
 modelo_1 = lm(safra_de_trigo ~ fertilizante ,data = dados)
-modelo_2 = lm(safra_de_trigo ~ chuva*fertilizante ,data = dados)
 
 summary(modelo_completo)
 anova(modelo_completo)

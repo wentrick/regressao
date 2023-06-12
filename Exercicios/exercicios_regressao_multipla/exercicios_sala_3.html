@@ -1699,39 +1699,21 @@ X                     </code></pre>
 e sera <span class="math inline">\(n \times n\)</span> (n sendo o numero
 de observacoes)</p>
 <pre class="r"><code>J = matrix(data = 1, nrow = n, ncol = n)
-J</code></pre>
-<pre><code>##       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
-##  [1,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##  [2,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##  [3,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##  [4,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##  [5,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##  [6,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##  [7,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##  [8,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##  [9,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-## [10,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-## [11,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-## [12,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-## [13,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-## [14,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-## [15,]    1    1    1    1    1    1    1    1    1     1     1     1     1
-##       [,14] [,15]
-##  [1,]     1     1
-##  [2,]     1     1
-##  [3,]     1     1
-##  [4,]     1     1
-##  [5,]     1     1
-##  [6,]     1     1
-##  [7,]     1     1
-##  [8,]     1     1
-##  [9,]     1     1
-## [10,]     1     1
-## [11,]     1     1
-## [12,]     1     1
-## [13,]     1     1
-## [14,]     1     1
-## [15,]     1     1</code></pre>
+head(J)</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14]
+## [1,]    1    1    1    1    1    1    1    1    1     1     1     1     1     1
+## [2,]    1    1    1    1    1    1    1    1    1     1     1     1     1     1
+## [3,]    1    1    1    1    1    1    1    1    1     1     1     1     1     1
+## [4,]    1    1    1    1    1    1    1    1    1     1     1     1     1     1
+## [5,]    1    1    1    1    1    1    1    1    1     1     1     1     1     1
+## [6,]    1    1    1    1    1    1    1    1    1     1     1     1     1     1
+##      [,15]
+## [1,]     1
+## [2,]     1
+## [3,]     1
+## [4,]     1
+## [5,]     1
+## [6,]     1</code></pre>
 <p>Agora podemos encontrar nosso vetor de Betas sabendo que ele pode ser
 calculado da seguinte forma:</p>
 <p><span class="math display">\[
@@ -1831,6 +1813,7 @@ seguintes somas de quadrados</p>
 </ul></li>
 </ul>
 <pre class="r"><code>sse = t(e) %*% e #soma de quadrados do residuo
+sse = t(Y) %*% Y - t(beta) %*% t(X) %*% Y #segunda forma de calcular
 sse</code></pre>
 <pre><code>##          [,1]
 ## [1,] 244.2984</code></pre>
@@ -1842,6 +1825,95 @@ ssr</code></pre>
 sst</code></pre>
 <pre><code>##        [,1]
 ## [1,] 2469.6</code></pre>
+<p>Em seguida temos que encontrar os quadrados medios:</p>
+<ul>
+<li>Quadrado Médio da regressao (MSR ou QMR)
+<ul>
+<li><span class="math inline">\(\frac{SSR}{p-1}\)</span></li>
+</ul></li>
+<li>Quadrado Médio do residuo (MSE ou QME)
+<ul>
+<li><span class="math inline">\(\frac{SSE}{n-p}\)</span></li>
+</ul></li>
+</ul>
+<p>Onde <span class="math inline">\(n\)</span> é o número de observacoes
+e <span class="math inline">\(p\)</span> o número de parametros
+(variaveis) do modelo</p>
+<pre class="r"><code>p = length(beta)</code></pre>
+<p>Vamos obter os graus de liberdade da regressao, residuo e total</p>
+<pre class="r"><code>glreg = p-1
+glres = n-p
+gltot = n-1</code></pre>
+<pre><code>## A quantiade de graus de liberdade relacionado a regressao é: 2</code></pre>
+<pre><code>## A quantiade de graus de liberdade relacionado aos residuos é: 12</code></pre>
+<pre><code>## A quantiade de graus de liberdade relacionado ao total é: 14</code></pre>
+<pre class="r"><code>msr = ssr/(p-1)
+msr</code></pre>
+<pre><code>##          [,1]
+## [1,] 1112.651</code></pre>
+<pre class="r"><code>mse = sse/(n-p)
+mse</code></pre>
+<pre><code>##         [,1]
+## [1,] 20.3582</code></pre>
+<p>Vamos calcular nosso <span class="math inline">\(R^2\)</span>:</p>
+<pre class="r"><code>r2 = ssr / sst
+r2</code></pre>
+<pre><code>##           [,1]
+## [1,] 0.9010777</code></pre>
+<p>Vamos calcular a soma de quadrados extra, para isso vamos ajustar um
+modelo somente com a variavel fertilizante e ver quanto ela explica por
+si só e quato que adicionar a variavel chuva vai incrementar nessa
+explicação. Para agilizar vamos calcular usando o a função lm()</p>
+<pre class="r"><code>modelo_1 = lm(safra_de_trigo ~ fertilizante ,data = dados)
+ssr1 &lt;- sum((fitted(modelo_1) - mean(dados$safra_de_trigo))^2)
+
+ssrx1x2 = ssr - ssr1</code></pre>
+<p>Podemos aproveitar esses calculos para encontrar o coeficiente de
+determinação parcial:</p>
+<p><span class="math display">\[
+R^2_{Y 2|1} = \frac{SSR(X1|X2)}{SSE(X2)}
+\]</span></p>
+<pre class="r"><code>modelo_2 = lm(safra_de_trigo ~ chuva ,data = dados)
+sse2 &lt;- sum((fitted(modelo_2) - dados$safra_de_trigo)^2)
+
+r2_x2x1 = ssrx1x2/sse2
+r2_x2x1</code></pre>
+<pre><code>##          [,1]
+## [1,] 0.561498</code></pre>
+<p>Em seguida podemos calcular os valores F observados:</p>
+<pre class="r"><code>f_value_reg = msr/mse
+f_value_reg</code></pre>
+<pre><code>##          [,1]
+## [1,] 54.65369</code></pre>
+<pre class="r"><code>f_value_x1 = ssr1/mse
+f_value_x1</code></pre>
+<pre><code>##          [,1]
+## [1,] 92.50784</code></pre>
+<pre class="r"><code>f_value_x1x2 = ssrx1x2/mse
+f_value_x1x2</code></pre>
+<pre><code>##          [,1]
+## [1,] 16.79954</code></pre>
+<p>Vamos calcular os p-valores do teste F</p>
+<pre class="r"><code>p_value_reg = pf(f_value_reg,glreg,glres,lower.tail = F)
+p_value_x1 = pf(f_value_x1,1,glres,lower.tail = F)
+p_value_x1x2 = pf(f_value_x1x2,1,glres,lower.tail = F)</code></pre>
+<pre><code>## O p-valor do teste F da Regressao completa é: 9.37053e-07</code></pre>
+<pre><code>## O p-valor do teste F da Regressao com X1 é: 5.445579e-07</code></pre>
+<pre><code>## O p-valor do teste F da Regressao com a adicção de X2 em X1: 0.001475727</code></pre>
+Podemos apresentar nossa tabela da anova
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Fonte_de_variacao"],"name":[1],"type":["chr"],"align":["left"]},{"label":["GL"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["SS"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["MQ"],"name":[4],"type":["chr"],"align":["left"]},{"label":["F_Value"],"name":[5],"type":["chr"],"align":["left"]},{"label":["F_Value.1"],"name":[6],"type":["chr"],"align":["left"]}],"data":[{"1":"Regressao","2":"2","3":"2225.3016","4":"1112.65","5":"54.6537","6":"9.371e-07"},{"1":"X1","2":"1","3":"1883.2931","4":"1883.29","5":"92.5078","6":"5.446e-07"},{"1":"X1|X2","2":"1","3":"342.0084","4":"342.01","5":"16.7995","6":"0.001476"},{"1":"Residuos","2":"12","3":"244.2984","4":"20.36","5":"","6":""},{"1":"Total","2":"14","3":"2469.6000","4":"","5":"","6":""}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Vamos comparar com a anova do R:</p>
+<pre class="r"><code>modelo_completo = lm(safra_de_trigo ~ fertilizante + chuva ,data = dados)
+anova(modelo_completo)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["int"],"align":["right"]},{"label":["Sum Sq"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Mean Sq"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["F value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"1883.2931","3":"1883.2931","4":"92.50784","5":"5.445579e-07","_rn_":"fertilizante"},{"1":"1","2":"342.0084","3":"342.0084","4":"16.79954","5":"1.475727e-03","_rn_":"chuva"},{"1":"12","2":"244.2984","3":"20.3582","4":"NA","5":"NA","_rn_":"Residuals"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 </div>
 </div>
 

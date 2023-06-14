@@ -1,0 +1,531 @@
+---
+title: "Exercicio Regressao Multipla"
+author: "Davi Wentrick Feijó - 200016806"
+date: "2023-06-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(tidyverse,Matrix,knitr,readxl)
+```
+
+#### Especificar os elementos dos vetores e matrizes do problema
+
+Usaremos o seguinte banco de dados:
+
+```{r echo=FALSE}
+dados <- read_xlsx("gordura.xlsx")
+dados
+```
+
+```{r}
+n <- nrow(dados) # Number of observations
+n
+```
+
+
+Nosso Y será a safra de trigo:
+
+```{r echo=FALSE}
+Y <- dados$Y
+Y <- as.matrix(Y)
+Y
+```
+
+
+E o X será o fertilizante e o indice de chuvas:
+
+```{r echo=FALSE}
+X <- cbind(dados$X1,dados$X2,dados$X3)
+X
+```
+
+podemos adicionar na matriz X o vetor de 1 para ser nosso intecepto.
+
+```{r}
+X <- cbind(rep(1,n), X) 
+X                     
+```
+
+Vamos definir nossa matris J que sera com composta inteiramente por 1 e sera $n \times n$ (n sendo o numero de observacoes)
+
+```{r}
+J = matrix(data = 1, nrow = n, ncol = n)
+head(J)
+```
+
+
+
+
+
+#### Determinar $X^TX$, $X^TY$ e $(X^TX)^{-1}$
+
+
+```{r}
+#encontrando XTX
+
+XTX = t(X) %*% X
+XTX
+
+#encontrando XTY
+
+XTY = t(X) %*% Y
+XTY
+
+#encontrando a inversa de XTX
+
+XTX_inv = solve(XTX)
+XTX_inv
+```
+
+
+
+#### Estimar os parâmetros do modelo e interpretá-los
+
+Agora podemos encontrar nosso vetor de Betas sabendo que ele pode ser calculado da seguinte forma:
+
+$$
+\beta = (X^TX)^{-1}X^TY
+$$
+
+```{r}
+#encnontrando a matriz de parametros Beta (ela contem o Beta 0 e o Beta 1 ou todos os beta no caso de uma regressao multipla)
+
+beta = XTX_inv %*% t(X) %*% Y #em partes
+
+beta = solve(t(X) %*% X) %*% t(X) %*% Y #direto
+
+beta
+```
+
+#### Determinar os valores estimados de $E(Y_i)$
+
+Com a matriz de betas podemos ajustar os valores esperados do modelo $\hat Y$:
+
+```{r}
+#valores estimados pelo modelo (y chapeu)
+Yhat <- X %*% beta # Fitted Values
+Yhat
+```
+
+#### Determinar os resíduos
+
+Em seguida podemos calcular nossos residuos
+
+```{r}
+#residuos do modelo
+e <- Y - Yhat # Residuals
+e
+```
+
+#### Testar ausência de regressão.
+
+Podemos realizar a ANOVA do modelo para isso precisaremos calcular as seguintes somas de quadrados
+
+* Soma de quadrados da regressao (SSR ou SQR)
+  + $\hat{\beta}^TX^TY-\frac{1}{n}Y^TJY$
+* Soma de quadrados do residuo (SSE ou SQE)
+  + $\varepsilon^T\varepsilon$ ou $Y^TY-\hat{\beta}^TX^TY$
+* Soma de quadrados total (SST ou SQT)
+  + $SSE+SSR$
+  
+```{r}
+sse = t(e) %*% e #soma de quadrados do residuo
+sse = t(Y) %*% Y - t(beta) %*% t(X) %*% Y #segunda forma de calcular
+sse
+
+ssr = t(beta) %*% t(X) %*% Y - (1/n) * (t(Y) %*% J %*% Y) #soma de quadrados da regressao
+ssr
+
+sst = ssr +sse  #soma de quadrados total
+sst
+```
+
+Em seguida temos que encontrar os quadrados medios:
+
+* Quadrado Médio da regressao (MSR ou QMR)
+  + $\frac{SSR}{p-1}$
+* Quadrado Médio do residuo (MSE ou QME)
+  + $\frac{SSE}{n-p}$
+
+Onde $n$ é o número de observacoes e $p$ o número de parametros (variaveis) do modelo
+
+```{r}
+p = length(beta)
+```
+Vamos obter os graus de liberdade da regressao, residuo e total
+
+```{r}
+glreg = p-1
+glres = n-p
+gltot = n-1
+```
+
+```{r echo=FALSE}
+cat("A quantiade de graus de liberdade relacionado a regressao é:",glreg)
+cat("A quantiade de graus de liberdade relacionado aos residuos é:",glres)
+cat("A quantiade de graus de liberdade relacionado ao total é:",gltot)
+```
+
+
+
+```{r}
+msr = ssr/(p-1)
+msr
+```
+
+```{r}
+mse = sse/(n-p)
+mse
+```
+
+Vamos calcular a soma de quadrados extra, para isso vamos ajustar um modelo somente com a variavel fertilizante e ver quanto ela explica por si só e quato que adicionar a variavel chuva vai incrementar nessa explicação. Para agilizar vamos calcular usando o a função lm()
+
+```{r}
+
+modelo_1 = lm(Y ~ X1,data = dados)
+modelo_2 = lm(Y ~ X1 + X2,data = dados)
+
+#SSR(X2|X1)
+ssr1 <- sum((fitted(modelo_1) - mean(dados$Y))^2)
+ssr2 <- sum((fitted(modelo_2) - mean(dados$Y))^2)
+
+ssrx1x2 = ssr2 - ssr1
+
+#SSR(X3|X1,X2)
+
+ssrx1x2x3 = ssr - ssr2
+
+
+```
+
+Podemos aproveitar esses calculos para encontrar o coeficiente de determinação parcial:
+
+Formula para quando temos uma regressao com uma unica variavel e queremos calcular o $R^2$ adiconando uma segunda
+$$
+R^2_{Y 2|1} = \frac{SSR(X1|X2)}{SSE(X2)}
+$$
+
+```{r}
+sse2 <- sum((fitted(modelo_1) - dados$Y)^2)
+
+r2_x2x1 = ssrx1x2/sse2
+r2_x2x1
+```
+
+$$
+R^2_{Y 3|1,2} = \frac{SSR(X3|X1,X2)}{SSE(X1,X2)}
+$$
+
+```{r}
+sse3 <- sum((fitted(modelo_2) - dados$Y)^2)
+
+r2_x3x2x1 = ssrx1x2x3/sse3
+r2_x3x2x1
+```
+
+Em seguida podemos calcular os valores F observados:
+
+
+OBS: Aqui pode haver confusão pelo fato de eu estar dividindo os SSR pelo MSE, isso é pelo fato de que o grau de liberdade é 1, logo para simplificar o codigo fiz direto.
+```{r}
+f_value_reg = msr/mse
+f_value_x1 = ssr1/mse
+f_value_x1x2 = ssrx1x2/mse
+f_value_x1x2x3 = ssrx1x2x3/mse
+
+```
+
+```{r echo=FALSE}
+cat("O F observado do teste F da Regressao completa é:",f_value_reg)
+cat("O F observado do teste F da Regressao com X1 é:",f_value_x1)
+cat("O F observado do teste F da Regressao com a adição de X2 em X1:",f_value_x1x2)
+cat("O F observado do teste F da Regressao com a adição de X3 em X1|X2:",f_value_x1x2x3)
+```
+
+Vamos calcular os p-valores do teste F
+
+```{r}
+p_value_reg = pf(f_value_reg,glreg,glres,lower.tail = F)
+p_value_x1 = pf(f_value_x1,1,glres,lower.tail = F)
+p_value_x1x2 = pf(f_value_x1x2,1,glres,lower.tail = F)
+p_value_x1x2x3 = pf(f_value_x1x2x3,1,glres,lower.tail = F)
+```
+
+```{r echo=FALSE}
+cat("O p-valor do teste F da Regressao completa é:",p_value_reg)
+cat("O p-valor do teste F da Regressao com X1 é:",p_value_x1)
+cat("O p-valor do teste F da Regressao com a adição de X2 em X1:",p_value_x1x2)
+cat("O p-valor do teste F da Regressao com a adição de X3 em X1|X2:",p_value_x1x2x3)
+```
+
+
+
+Podemos apresentar nossa tabela da anova
+```{r echo=FALSE}
+#tabela anova na mao
+anova_table <- data.frame(Fonte_de_variacao = c("Regressao","X1","X2|X1","X3|X1,X2","Residuos", "Total"),
+                          GL = c(glreg,1,1,1,glres,gltot),
+                          SS = c(ssr,ssr1,ssrx1x2,ssrx1x2x3,sse,sst),
+                          MQ = c(round(msr,2),round(ssr1/1,2),round(ssrx1x2/1,2),round(ssrx1x2x3/1,2),round(mse,2), ''),
+                          F_Value = c(round(f_value_reg,4),round(f_value_x1,4),round(f_value_x1x2,4),round(f_value_x1x2x3,4),"",""),
+                          F_Value = c(round(p_value_reg,10),round(p_value_x1,10),round(p_value_x1x2,6),round(p_value_x1x2x3,6),"",""),
+                          stringsAsFactors = FALSE)
+rownames(anova_table) <- NULL
+
+anova_table
+```
+Vamos comparar com a anova do R:
+
+```{r}
+modelo_completo = lm(Y ~ X1 + X2 + X3 ,data = dados)
+anova(modelo_completo)
+```
+
+#### Determinar e $R^2$ interpretá-lo
+
+Vamos calcular nosso $R^2$:
+
+```{r}
+r2 = ssr / sst
+r2
+```
+
+#### Determinar o coeficiente de correlação linear múltipla e interpretá-lo.
+
+Vamos calcular nosso $R$, para isso é necessario somente tirar a raiz de $R^2$:
+
+```{r}
+r = sqrt(r2)
+r
+```
+
+#### Estimar a variància residual.
+
+Estimador da variancia residual
+
+$$
+\hat\sigma^2 = \frac{\sum^n_{i=1}e_i^2}{n-p} = \frac{SSE}{n-p} = MSE
+$$
+
+$$
+MSE = \frac{Y^TY-\hat\beta^TX^TY}{n-p}
+$$
+
+```{r}
+mse
+```
+
+#### Estimar a variância dos estimadores. 
+
+Podemos calcular a $V(\hat\beta)$, que será uma matriz de covariancias onde a diagonal tera as variancias dos betas, utilizando a seguinte formula:
+
+$$
+V(\hat\beta) = \hat\sigma^2(X^TX)^{-1}
+$$
+
+```{r}
+cov_beta = as.numeric(mse) * solve(t(X) %*% X) #tive que colocar como numerico 
+                                             #pois o r entende que é uma matriz 1x1
+round(cov_beta,4)
+
+var_beta = diag(cov_beta)
+round(var_beta,4)
+```
+
+#### Qual a distribuição, com seus respectivos parâmetros, dos estimadores $\hat\beta_0$, $\hat\beta_j$  $j=1,2,3,...,p-1$ e $\hat\sigma^2$
+
+
+
+#### Testar isoladamente $\hat\beta_0 = 0$, $\hat\beta_j = 0$ $j=1,2,3,...,p-1$
+
+O teste para os betas pode ser feito da seguinte forma:
+
+$$
+\frac{\hat\beta_k - \beta_k}{S(\hat\beta_k)} \sim \text{Student com (n-p) g.l}
+$$
+Como queremos testar $beta_k = 0$
+$$
+t = \frac{\hat\beta_k - 0}{S(\hat\beta_k)}  = \frac{\hat\beta_k}{S(\hat\beta_k)} 
+$$
+onde:
+
+$$
+S(\hat\beta_k) = \sqrt{V(\beta_k)}
+$$
+
+```{r}
+t_value_b0 = beta[1]/sqrt(var_beta[1])
+t_value_b1 = beta[2]/sqrt(var_beta[2])
+t_value_b2 = beta[3]/sqrt(var_beta[3])
+t_value_b3 = beta[4]/sqrt(var_beta[4])
+```
+
+```{r echo=FALSE}
+cat("O valor T observado para Beta 0 é:",t_value_b0)
+cat("O valor T observado para Beta 1 é:",t_value_b1)
+cat("O valor T observado para Beta 2 é:",t_value_b2)
+cat("O valor T observado para Beta 3 é:",t_value_b3)
+```
+
+```{r}
+p_value_b0 = pt(t_value_b0,n-p ,lower.tail = F)
+p_value_b1 = pt(t_value_b1,n-p ,lower.tail = F)
+p_value_b2 = pt(t_value_b2,n-p ,lower.tail = F)
+p_value_b3 = pt(t_value_b3,n-p ,lower.tail = F)
+```
+
+```{r echo=FALSE}
+cat("O P-Valor observado para Beta 0 é:",p_value_b0)
+cat("O P-Valor observado para Beta 1 é:",p_value_b1)
+cat("O P-Valor observado para Beta 2 é:",p_value_b2)
+cat("O P-Valor observado para Beta 3 é:",p_value_b3)
+```
+
+
+#### Determinar os intervalos de 90% de confiança para os parâmetros do modelo e para $\sigma^2$
+
+
+Sabemos que podem ser calculados por meio das seguintes formulas:
+
+
+O intervalo de confiança $(1-\alpha)$ pode ser escrito como:
+
+$$
+\beta_k \in (\hat\beta_k \mp t_{1-\alpha/2}S(\hat\beta_k))
+$$
+
+Vamos calcular o intervalo de confianca de 90% para $\beta_k$
+
+```{r}
+alfa = 0.10
+t_value = qt(1-(alfa/2),n-p)
+```
+
+
+```{r}
+#beta0
+ic_inf_b0 = beta[1] - t_value * sqrt(var_beta[1])
+ic_sup_b0 = beta[1] + t_value * sqrt(var_beta[1])
+
+#beta1
+ic_inf_b1 = beta[2] - t_value * sqrt(var_beta[2])
+ic_sup_b1 = beta[2] + t_value * sqrt(var_beta[2])
+
+#beta2
+ic_inf_b2 = beta[3] - t_value * sqrt(var_beta[3])
+ic_sup_b2 = beta[3] + t_value * sqrt(var_beta[3])
+
+#beta3
+ic_inf_b3 = beta[4] - t_value * sqrt(var_beta[4])
+ic_sup_b3 = beta[4] + t_value * sqrt(var_beta[4])
+```
+
+```{r echo=FALSE}
+cat("O intervalo de confiancça para beta 0 é:(",ic_inf_b0,",",ic_sup_b0,")")
+cat("O intervalo de confiancça para beta 1 é:(",ic_inf_b1,",",ic_sup_b1,")")
+cat("O intervalo de confiancça para beta 2 é:(",ic_inf_b2,",",ic_sup_b2,")")
+cat("O intervalo de confiancça para beta 3 é:(",ic_inf_b3,",",ic_sup_b3,")")
+```
+
+Vamos encontrar o intervalo para $\sigma^2$
+
+Temos que:
+
+$$
+\frac{(n-p)\hat\sigma^2}{\sigma^2}: \text{distribuição de Qui-Quadrado com (n-p) g.l}
+$$
+
+Podemos chegar nesse novo intervalo:
+
+$$
+\sigma^2 \in (\frac{\sum_{i=1}^{n} e_{i}^2}{\chi_{\alpha/2}} , \frac{\sum_{i=1}^{n} e_{i}^2}{\chi_{1-\alpha/2}}) 
+$$
+
+```{r}
+#Primeira formula (Verificar se essa formula está correta para regressao multi
+#                  eu peguei a formula dos slides de regressao simples)
+ic_inf_sigma = (n-p)*mse/qchisq(alfa/2,n-p,lower.tail = FALSE)
+ic_sup_sigma = (n-p)*mse/qchisq(1-alfa/2,n-p,lower.tail = FALSE)
+
+#Segunda formula (o mesmo vale para essa)
+ic_inf_sigma2 = sse/qchisq(alfa/2,n-p,lower.tail = FALSE)
+ic_sup_sigma2 = sse/qchisq(1-(alfa/2),n-p,lower.tail = FALSE)
+```
+
+```{r echo=FALSE}
+cat("O intervalo de confiancça para variancia residual utilizando a primeira formula é:(",ic_inf_sigma,",",ic_sup_sigma,")")
+cat("O intervalo de confiancça para variancia residual utilizando a segunda formula é:(",ic_inf_sigma2,",",ic_sup_sigma2,")")
+```
+
+#### Estime com 95% de confiança Y para X1 = 25, X2 = 35 e X3 = 20. 
+
+Vamos calcular o intervalo de confiança para uma observação, dentro do limite dos dados, com esses parametros:
+```{r}
+#ESTIMAÇÃO DA RESPOSTA MÉDIA (estiamção pontual)
+xh = c(1,25,35,20)
+yh = xh %*% beta
+alfa = 0.10
+t_value = qt(1-alfa/2,n-p)
+
+ic_sup = yh + t_value * sqrt(mse*(xh %*% XTX_inv %*% xh))
+ic_inf = yh - t_value * sqrt(mse*(xh %*% XTX_inv %*% xh))
+```
+
+
+```{r echo=FALSE}
+cat("Intervalo de confiança para",xh,": [", ic_inf, ", ", ic_sup, "]\n")
+```
+
+#### Estime com 95% de confiança Y para X1 = 35, X2 = 35 e X3 = 20. 
+
+Vamos repetir o calculo porem o X1 está maior do que o limite dos dados (o X1 vai ate 31)
+```{r}
+#Predição da uma Nova Observação
+xh = c(1,35,35,20)
+yh = xh %*% beta
+alfa = 0.10
+t_value = qt(1-alfa/2,n-p)
+
+ic_sup = yh + t_value * sqrt(mse*(1+(xh %*% XTX_inv %*% xh)))
+ic_inf = yh - t_value * sqrt(mse*(1+(xh %*% XTX_inv %*% xh)))
+```
+
+
+```{r echo=FALSE}
+cat("Intervalo de confiança para",xh,": [", ic_inf, ", ", ic_sup, "]\n")
+```
+
+#### Estime com 95% de confiança 4 novas observações para Y para X1 = 27, X2 = 32 e X3 = 24. 
+
+Vamos agira calcular o IC para m novas observações:
+
+```{r}
+#Predição da Média de m Novas Observações
+xh = c(1,27,32,24)
+yh = xh %*% beta
+m = 4
+alfa = 0.10
+t_value = qt(1-alfa/2,n-2)
+
+ic_sup = yh + t_value * sqrt(mse*((1/m)+(xh %*% XTX_inv %*% xh)))
+ic_inf = yh - t_value * sqrt(mse*((1/m)+(xh %*% XTX_inv %*% xh)))
+```
+
+
+```{r echo=FALSE}
+cat("Intervalo de confiança para",xh,": [", ic_inf, ", ", ic_sup, "]\n")
+```
+
+
+
+
+
+
+
+
+
+
+
+

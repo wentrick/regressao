@@ -1,5 +1,5 @@
 ---
-title: "Exercicio Regressao Multipla Sala"
+title: "Exercicio Regressao Multipla - 1"
 author: "Davi Wentrick Feijó - 200016806"
 date: "2023-06-02"
 output:

@@ -2,7 +2,13 @@
 title: "Exercicio Regressao Multipla"
 author: "Davi Wentrick Feijó - 200016806"
 date: "2023-06-14"
-output: html_document
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_depth: 4
+    toc_float: true
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -10,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 pacman::p_load(tidyverse,Matrix,knitr,readxl)
 ```
 
+### Regressão Linear Multipla - Dados Gordura
 #### Especificar os elementos dos vetores e matrizes do problema
 
 Usaremos o seguinte banco de dados:
@@ -98,6 +105,12 @@ beta = solve(t(X) %*% X) %*% t(X) %*% Y #direto
 
 beta
 ```
+Nossa equação da regressao fica assim:
+
+$$
+Y = 117,084 + 4,334 \cdot X_1 -2,856 \cdot X_2 - 2,186 \cdot X_3
+$$
+
 
 #### Determinar os valores estimados de $E(Y_i)$
 
@@ -336,6 +349,25 @@ round(var_beta,4)
 
 #### Qual a distribuição, com seus respectivos parâmetros, dos estimadores $\hat\beta_0$, $\hat\beta_j$  $j=1,2,3,...,p-1$ e $\hat\sigma^2$
 
+Sabemos que os $\beta_k$ seguem:
+
+$$
+\beta_k \sim N(\beta_0,V(\beta_K))
+$$
+$$
+\beta_0 \sim N(117,084 \ ; \ 9956,527)
+$$
+$$
+\beta_1 \sim N(117,084 \ ; \ 9,0933)
+$$
+
+$$
+\beta_2 \sim N(117,084 \ ; \ 6.6668)
+$$
+
+$$
+\beta_3 \sim N(117,084;2.5456)
+$$
 
 
 #### Testar isoladamente $\hat\beta_0 = 0$, $\hat\beta_j = 0$ $j=1,2,3,...,p-1$
@@ -459,12 +491,12 @@ cat("O intervalo de confiancça para variancia residual utilizando a primeira fo
 cat("O intervalo de confiancça para variancia residual utilizando a segunda formula é:(",ic_inf_sigma2,",",ic_sup_sigma2,")")
 ```
 
-#### Estime com 95% de confiança Y para X1 = 25, X2 = 35 e X3 = 20. 
+#### Estime com 95% de confiança Y para X1 = 30.2, X2 = 51 e X3 = 30.
 
-Vamos calcular o intervalo de confiança para uma observação, dentro do limite dos dados, com esses parametros:
+Vamos calcular o intervalo de confiança para uma observação, que contem um caobminaçao de valores presentes no banco
 ```{r}
 #ESTIMAÇÃO DA RESPOSTA MÉDIA (estiamção pontual)
-xh = c(1,25,35,20)
+xh = c(1,30.2,51,30)
 yh = xh %*% beta
 alfa = 0.10
 t_value = qt(1-alfa/2,n-p)
@@ -478,12 +510,12 @@ ic_inf = yh - t_value * sqrt(mse*(xh %*% XTX_inv %*% xh))
 cat("Intervalo de confiança para",xh,": [", ic_inf, ", ", ic_sup, "]\n")
 ```
 
-#### Estime com 95% de confiança Y para X1 = 35, X2 = 35 e X3 = 20. 
+#### Estime com 95% de confiança Y para X1 = 25, X2 = 54.4 e X3 = 37.
 
-Vamos repetir o calculo porem o X1 está maior do que o limite dos dados (o X1 vai ate 31)
+Vamos repetir o calculo para uma nova observação, um dos parametros tem um valor que nao esta presente no banco porem ainda dentro do limite dos dados
 ```{r}
 #Predição da uma Nova Observação
-xh = c(1,35,35,20)
+xh = c(1,25,54.4,37)
 yh = xh %*% beta
 alfa = 0.10
 t_value = qt(1-alfa/2,n-p)
@@ -497,13 +529,13 @@ ic_inf = yh - t_value * sqrt(mse*(1+(xh %*% XTX_inv %*% xh)))
 cat("Intervalo de confiança para",xh,": [", ic_inf, ", ", ic_sup, "]\n")
 ```
 
-#### Estime com 95% de confiança 4 novas observações para Y para X1 = 27, X2 = 32 e X3 = 24. 
+#### Estime com 95% de confiança 4 novas observações para Y para X1 = 16, X2 = 58.5 e X3 = 22.8. 
 
-Vamos agira calcular o IC para m novas observações:
+Vamos agora calcular o IC para m novas observações:
 
 ```{r}
 #Predição da Média de m Novas Observações
-xh = c(1,27,32,24)
+xh = c(1,16,58.5,22.8)
 yh = xh %*% beta
 m = 4
 alfa = 0.10

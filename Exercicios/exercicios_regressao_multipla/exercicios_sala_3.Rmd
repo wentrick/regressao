@@ -310,7 +310,7 @@ Vamos calcular o intervalo de confianca de 90% para $\beta_1$
 
 ```{r}
 alfa = 0.10
-#t_value = qt(1-(alfa/2))
+t_value = qt(1-(alfa/2),n-p)
 
 ```
 

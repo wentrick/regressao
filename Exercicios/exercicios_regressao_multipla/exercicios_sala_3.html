@@ -1940,6 +1940,23 @@ round(var_beta,4)</code></pre>
 <pre><code>## [1] 11.7091  0.0001  0.0476</code></pre>
 </div>
 </div>
+<div id="intervalos-de-confianca-para-beta_k" class="section level3">
+<h3>Intervalos de Confianca para <span class="math inline">\(\beta_k\)</span></h3>
+<p>Sabemos que podem ser calculados por meio das seguintes formulas:</p>
+<p><span class="math display">\[
+\frac{\hat\beta_k - \beta_k}{S(\hat\beta_k)} \sim \text{Student com
+(n-p) g.l}
+\]</span></p>
+<p>O intervalo de confiança <span class="math inline">\((1-\alpha)\)</span> pode ser escrito como:</p>
+<p><span class="math display">\[
+\beta_k \in (\hat\beta_k \mp t_{1-\alpha/2}S(\hat\beta_k))
+\]</span> onde:</p>
+<p><span class="math display">\[
+S(\hat\beta_k) = \sqrt{V(\beta_k)}
+\]</span> Vamos calcular o intervalo de confianca de 90% para <span class="math inline">\(\beta_1\)</span></p>
+<pre class="r"><code>alfa = 0.10
+#t_value = qt(1-(alfa/2))</code></pre>
+</div>
 
 
 

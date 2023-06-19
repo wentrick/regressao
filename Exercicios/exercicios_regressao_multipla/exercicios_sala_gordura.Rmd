@@ -2,18 +2,23 @@
 title: "Exercicio Regressão Multipla - 2"
 author: "Davi Wentrick Feijó - 200016806"
 date: "2023-06-14"
-output:
+output: 
+  rmdformats::downcute:
+    self_contained: true
+    thumbnails: true
+    lightbox: true
+    gallery: true
+    highlight: tango
+    toc_depth : 4
   html_document:
-    df_print: paged
-    toc: true
-    toc_depth: 4
+    toc: false
+    toc_depth: 5
     toc_float: true
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-pacman::p_load(tidyverse,Matrix,knitr,readxl)
+pacman::p_load(tidyverse,Matrix,knitr,readxl,rmdformats)
 ```
 
 ### Regressão Linear Multipla - Dados Gordura

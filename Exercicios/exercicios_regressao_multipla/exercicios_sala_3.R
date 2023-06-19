@@ -1,4 +1,6 @@
 pacman::p_load(tidyverse,Matrix)
+
+
 #modelo linear multiplo
 area = c(1:15)
 safra_de_trigo = c(40,38,50,49,50,55,70,55,45,65,72,70,65,80,75)

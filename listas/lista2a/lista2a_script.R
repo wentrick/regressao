@@ -101,7 +101,7 @@ ggcorrplot(df_cor,lab = TRUE)
 
 #matriz grafico de dispersao
 
-ggpairs(dados)
+ggpairs(dados) #podemos perceber que a variavel X2 é categorica (2,4)
 
 
 
@@ -153,9 +153,9 @@ results = data.frame(modelo$model,modelo$fitted.values,modelo$residuals)
 
 plot(results$modelo.fitted.values,results$Y)
 
-plot(results$X1,results$modelo.fitted.values)
+plot(results$X1,residuos)
 
-plot(results$X2,results$modelo.fitted.values)
+plot(results$X2,residuos)
 
 
 #e)

@@ -73,3 +73,8 @@ lm(data = dados_cirurgia, tempo_sobrevivencia ~ escore_coagulacao + indice_progn
 
 
 colnames(dados_cirurgia)
+
+
+
+
+

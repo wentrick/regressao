@@ -1,0 +1,54 @@
+---
+title: "Relatório Final"
+subtitle: "Análise de Regressao Linear"
+author: "Davi Wentrick Feijó"
+header_left: "Runninghead"
+header_right: "Author"
+date: \today
+fontsize: 11pt
+german: false # default is Englisht
+output: 
+  UHHformats::pdf_simple:
+    font: "Helvetica" # alternative: "TheSansUHH"  
+---
+
+```{r setup, include = FALSE}
+# settings --> keep this chunk as it is!
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, 
+  warning = FALSE, error = FALSE, cache = TRUE,
+  fig.path='figs/', cache.path = 'cache/')
+```
+
+```{r load-packages, include = FALSE}
+# packages
+pacman::p_load(knitr,kableExtra,xtable,tidyverse)
+```
+
+```{r generate-package-refs, include=FALSE}
+# Create a bib database for R packages used above
+# NOTE: RUN THIS CODE CHUNK MANUALLY TO CREATE FILE BEFORE KNITTING
+knitr::write_bib(
+  x = c(.packages(), 'bookdown', 'rmarkdown', 'UHHformats',
+    # Add here now all packages that are loaded above:
+    'knitr', 'kableExtra', 'xtable', 'tidyverse'),
+  file = 'bib/packages.bib'
+)
+```
+
+<!-- This is how you can define comments in an .Rmd file (outside the R code snippets) -->
+
+
+# Introdução
+# Objetivos
+# Metodologia
+# Resultados 
+# Conclusão
+
+
+
+
+
+
+
+
+

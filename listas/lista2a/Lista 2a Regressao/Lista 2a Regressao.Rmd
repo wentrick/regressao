@@ -1,0 +1,260 @@
+---
+title: "Lista 2a"
+subtitle: "Análise de Regressao Linear"
+author: "Davi Wentrick"
+header_left: "Runninghead"
+header_right: "Author"
+date: \today
+fontsize: 11pt
+german: false # default is English"
+output: 
+  UHHformats::pdf_simple:
+    font: "Helvetica" # alternative: "TheSansUHH"  
+---
+
+```{r setup, include = FALSE}
+# settings --> keep this chunk as it is!
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, 
+  warning = FALSE, error = FALSE, cache = TRUE,
+  fig.path='figs/', cache.path = 'cache/')
+```
+
+```{r load-packages, include = FALSE}
+# packages
+pacman::p_load(knitr,kableExtra,xtable,tidyverse,readxl,GGally)
+```
+
+```{r generate-package-refs, include=FALSE}
+# Create a bib database for R packages used above
+# NOTE: RUN THIS CODE CHUNK MANUALLY TO CREATE FILE BEFORE KNITTING
+knitr::write_bib(
+  x = c(.packages(), 'bookdown', 'rmarkdown', 'UHHformats',
+    # Add here now all packages that are loaded above:
+    'knitr', 'kableExtra', 'xtable', 'tidyverse'),
+  file = 'bib/packages.bib'
+)
+```
+
+<!-- This is how you can define comments in an .Rmd file (outside the R code snippets) -->
+
+
+# Considere a função resposta: $E(Y) = 25+3X_1+4X_2+1,5X_1X_2$
+
+##  Faça o gráfico de $E(Y) \times X_1$ quando $X_2 = 3$ e $X_2 = 6$ .
+
+```{r}
+#X2 = 3
+
+# Definir a função do polinômio
+polinomio <- function(x1,x2) {
+  return(25 + 3*x1 + 4*x2 + 1.5*x1*x2)
+}
+
+# Fazendo pelo ggplot
+
+# Criar um data frame com os valores de x
+x <- seq(0, 20, length.out = 100)
+df <- data.frame(x = x)
+
+# Calcular os valores de y usando a função do polinômio
+df$y <- polinomio(x1 = df$x, x2 = 3)
+
+# Plotar o gráfico usando ggplot2
+ggplot(df, aes(x = x, y = y)) +
+  geom_line() +
+  labs(x = "x", y = "y", title = "Gráfico do Polinômio X=3")
+```
+
+
+```{r}
+#X2 = 6
+
+# Definir a função do polinômio
+polinomio <- function(x1,x2) {
+  return(25 + 3*x1 + 4*x2 + 1.5*x1*x2)
+}
+
+# Criar um data frame com os valores de x
+x <- seq(0, 20, length.out = 100)
+df <- data.frame(x = x)
+
+# Calcular os valores de y usando a função do polinômio
+df$y <- polinomio(x1 = df$x, x2 = 6)
+
+# Plotar o gráfico usando ggplot2
+ggplot(df, aes(x = x, y = y)) +
+  geom_line() +
+  labs(x = "x", y = "y", title = "Gráfico do Polinômio X=6")
+```
+
+##  Os efeitos de $X_1$ e $X_2$ são aditivos? Como você identificou isto no gráfico obtido no item a.
+
+O modelo é aditivo podemos perceber que a escala ela dobra quando dobramos o X indicando que o valores sao maiores
+
+# Estabeleça a matriz $X$ e os vetores $Y$ $\beta$ e para os seguintes modelos (assuma que $i=1,2,3,4$).
+
+## $Y_i = \beta_0+\beta_1X_{i1}+\beta_2X_{i1}X_{i2}+\epsilon_i$
+## $\sqrt{Y_i} = \beta_0+\beta_1X_{i1}+\beta_2X_{i2}+\epsilon_i$
+
+# Por que não é siginificativo atribuir um sínal ao coeficiente de correlação múltipla, embora façamos isso para o coeficiente de correlação linear simples?
+
+
+# Preferência de marca : Vamos estudar a relacao entre gosto da marca (Y),Teor de Umidade ($X_1$) e Doçura ($X_2$).
+
+```{r}
+dados <- read_excel("Dados_ex_6_5.xlsx", 
+                    col_types = c("numeric", "numeric", "numeric"))
+
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(dados, caption = "Dados do estudo de preferência de marca", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
+```
+
+## Obtenha o grafico de dispersao e a matriz de correlacao
+
+Vamos utilizar o pacote `GGally` e a funcao `ggpairs()` para criar uma matriz que contem os gráficos de dispersao, densidade e correlacao entre as variaveis do banco
+
+```{r}
+# Calcular a matriz de correlação
+matriz_cor <- cor(dados)
+
+# Converter a matriz de correlação em um data frame
+df_cor <- as.data.frame(matriz_cor)
+
+#matriz grafico de dispersao
+
+ggpairs(dados) #podemos perceber que a variavel X2 é categorica (2,4)
+```
+
+Podemos notar pelo grafico de dispersao que a variavel $X_2$ é categorica com 2 valores 4 e 2. 
+
+```{r}
+dados = dados %>%
+  mutate(X2 = as.factor(X2))
+```
+
+
+## Ajuste o modelo aos dados. Escreva a funcao de regressao e interprete $\beta_1$
+
+Ao ajustar o modelo no R temos o seguinte resultado
+
+```{r}
+modelo = lm(Y ~ X1 + X2, data = dados)
+summary(modelo)
+```
+
+E obtemos a seguinte equacao de regressao:
+
+$$
+Y =  46,4 + 4.425X_1 + 8.75X_2
+$$
+Nosso $\beta_1$ é o aumento que teremos no Gosto da marca (Y) a cada unidade fixado um $X_2$
+
+## Obtenha os residuo, monte um boxplot e interprete.
+
+```{r}
+residuos = modelo$residuals
+
+# Calcular medidas resumo
+medidas_resumo <- as.data.frame(residuos) %>%
+  summarize(
+    Min = min(residuos),
+    Q1 = quantile(residuos, 0.25),
+    Mediana = median(residuos),
+    Q3 = quantile(residuos, 0.75),
+    Max = max(residuos),
+    Media = mean(residuos)
+  )
+
+# Criar o boxplot com medidas resumo
+ggplot(dados, aes(y = residuos)) +
+  geom_boxplot() +
+  geom_point(data = medidas_resumo, aes(x=0,y = Media), color = "red", size = 3) +
+  labs(x = "Residuos", y = "Valor", title = "Boxplot com Medidas Resumo")
+
+
+
+#graficos de residuos
+
+qqnorm(residuos)
+qqline(residuos)
+```
+
+O boxplot parece indicar que os residuos seguem normalidade e podemos confirmar isso pelo gráfico QQplot feito usando os valores residuais. Logo podemos realizar um teste de Shapiro para verificar essa hipotese:
+
+```{r}
+shapiro.test(residuos)
+```
+
+Agora com o p-valor de 0.922 podemos assumir que os residuos seguem normalidade
+
+
+## Faca o plot dos residuos contra $\hat{Y}$,$X_1$,$X_2$ e $X_1X_2$ em graficos separados. E faca um grafico de probabilidade Normal e interprete os resultados
+
+O grafico de normalidade ja foi feito anteriormente
+
+```{r}
+results = data.frame(modelo$model,modelo$fitted.values,modelo$residuals)
+
+plot(results$Y,results$modelo.fitted.values)
+
+plot(results$X1,results$modelo.fitted.values)
+
+plot(results$X2,results$modelo.fitted.values)
+
+```
+
+## Realize o teste de Breusch-Pagan para a consistencia da variancia do erro com $\alpha = 0.01$.
+
+```{r}
+SSR = anova(modelo)[[1,2]] #soma de quadrados da regressao
+SSE = anova(modelo)[[2,2]] #soma de quadrados do residuo
+
+n = length(dados$Y)
+
+alfa = 0.05
+est_obs = (SSR/2)/(SSE/n)^2
+
+pchisq(est_obs,alfa,1)
+```
+
+## Realize um teste de falta de ajuste com $\alpha = 0.01$
+
+```{r}
+
+glres = n-2
+
+c = glres
+
+results = results %>%
+  mutate(y_barra = ave(Y, X1, FUN = mean))
+
+SSPE = sum((results$Y - results$y_barra)^2)
+
+SSLF = sum((results$y_barra - results$modelo.fitted.values)^2)
+
+
+MSPE = SSPE/(n-c)
+
+MSLF = SSLF/(c-2)
+
+
+f_obs = MSLF/MSPE
+
+pf(f_obs,n-2,n-c)
+
+```
+
+## Assumindo que a regressao tem erro normal e independente:
+
+### Teste se tem um relacao de regressao com $\alpha = 0.01$. O que seu teste diz sobre $\beta_1$ e $\beta_2$
+
+### Qual é o p-valor do teste?
+
+### Estime $\beta_1$ e $\beta_2$ conjuntamente pelo metodo de bonferroni com uam confianca de 99%. interprete os resultados
+
+
+

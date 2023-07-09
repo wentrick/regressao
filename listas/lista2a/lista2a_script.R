@@ -103,7 +103,8 @@ ggcorrplot(df_cor,lab = TRUE)
 
 ggpairs(dados) #podemos perceber que a variavel X2 é categorica (2,4)
 
-
+dados = dados %>%
+  mutate(X2 = as.factor(X2))
 
 #b)
 
@@ -114,7 +115,7 @@ summary(modelo)
 #c)
 
 
-residuo = modelo$residuals
+residuos = modelo$residuals
 
 boxplot(residuo)
 
@@ -193,6 +194,25 @@ MSLF = SSLF/(c-2)
 f_obs = MSLF/MSPE
 
 pf(f_obs,n-2,n-c)
+
+# 6.6
+
+
+#a)
+
+
+#b)
+
+#c)
+
+#calculo de B de bonferroni
+
+p = length(colnames(dados)) - 1 #numero de parametros retirando Y
+g = 2 #numero de betas a serem estimados
+
+b = qt(1-(alfa)/(2*g),n-p)
+
+
 
 
 

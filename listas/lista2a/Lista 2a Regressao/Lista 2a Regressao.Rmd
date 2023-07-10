@@ -329,3 +329,15 @@ cat("Intervalo de confiança para a média de Y: [", ic_lower, ",", ic_upper, "]
 
 ### Obtenha um intervalo de predicao para uma nova observacao $Y_{h(nova)}$ quando $X_{h1} = 5$ e $X_{h2} = 4$ use um intervalo com 99% de confianca para sua estimativa
 
+
+```{r}
+
+```
+
+
+
+
+
+
+
+

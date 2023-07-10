@@ -305,6 +305,23 @@ r_2
 ### Obtenha o intervalo de estimacao para $E(Y_h)$ quando $X_{h1} = 5$ e $X_{h2} = 4$ use um intervalo com 99% de confianca para sua estimativa
 
 ```{r}
+#estimativa intervalar da média de Y dado um x
+alfa = 0.01
+x_0 = c(1,5,4)
+
+
+#calculo da t
+
+t = qt(1-(alfa)/(2),n-p)
+
+#calculo Bonferroni
+y_new_hat <- x_0 %*% beta # Estimativa pontual da média de Y para o valor de X escolhido
+var_y = t(x_0) %*% cov_beta %*% x_0
+ic_lower <- y_new_hat - t*var_y # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + t*var_y # Limite superior do intervalo de confiança
+
+cat("O valor estimado Y quando X1 e X2 =", c(x_0[2],x_0[3]), "é:",y_new_hat)
+cat("Intervalo de confiança para a média de Y: [", ic_lower, ",", ic_upper, "]")
 
 ```
 

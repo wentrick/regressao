@@ -247,31 +247,22 @@ r_2
 
 #estimativa intervalar da média de Y dado um x
 alfa = 0.05
-x_escolhido = c(1,5,4)
+x_0 = c(1,5,4)
 
-g = 3 #numero de intervalos a ser estimado
 
-#calculo de B de bonferroni
+#calculo do t
 
-b = qt(1-(alfa)/(2*g),n-p)
+t = qt(1-(alfa)/(2),n-p)
 
-#calculo usando o erro padrao (verificar se esta correto) - scheffe
-y_new_hat <- x_escolhido %*% beta # Estimativa pontual da média de Y para o valor de X escolhido
-var_y = x_escolhido %*% 
-ic_lower <- y_new_hat - (s2/g)*sigma*sqrt(1 + (1/n) + ((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
-ic_upper <- y_new_hat + (s2/g)*sigma*sqrt(1+(1/n)+((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
+#calculo Bonferroni
+y_new_hat <- x_0 %*% beta # Estimativa pontual da média de Y para o valor de X escolhido
+var_y = t(x_0) %*% cov_beta %*% x_0
+ic_lower <- y_new_hat - t*var_y # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + t*var_y # Limite superior do intervalo de confiança
 
-cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
-cat("Intervalo de confiança de Scheffe para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
-
-#calculo usando o erro padrao (verificar se esta correto) - Bonferroni
-y_new_hat <- beta_0 + beta_1*x_escolhido # Estimativa pontual da média de Y para o valor de X escolhido
-ic_lower <- y_new_hat - b*sigma*sqrt(1 + (1/n) + ((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
-ic_upper <- y_new_hat + b*sigma*sqrt(1+(1/n)+((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
-
-cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
-cat("Intervalo de confiança de Bonferroni para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
-
+cat("O valor estimado Y quando X1 e X2 =", c(x_0[2],x_0[3]), "é:",y_new_hat)
+cat("Intervalo de confiança para a média de Y: [", ic_lower, ",", ic_upper, "]")
 
 
 #b
+

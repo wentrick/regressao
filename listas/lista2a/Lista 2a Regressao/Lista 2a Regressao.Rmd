@@ -331,6 +331,15 @@ cat("Intervalo de confiança para a média de Y: [", ic_lower, ",", ic_upper, "]
 
 
 ```{r}
+m =1
+MSE = mean(modelo$residuals^2) #quadrado médio do erro (MSE)
+var_y_pred = ((1/m)*(t(x_0) %*% cov_beta %*% x_0))
+#calculo usando o erro padrao (verificar se esta correto) - Bonferroni
+ic_lower <- y_new_hat - t*var_y_pred # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + t*var_y_pred # Limite superior do intervalo de confiança
+
+cat("O valor estimado Y quando X1 e X2 =", c(x_0[2],x_0[3]), "é:",y_new_hat)
+cat("Intervalo de confiança de Bonferroni para a média de Y: [", ic_lower, ",", ic_upper, "]")
 
 ```
 

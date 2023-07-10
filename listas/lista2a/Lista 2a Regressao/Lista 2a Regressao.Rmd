@@ -144,6 +144,14 @@ Ao ajustar o modelo no R temos o seguinte resultado
 ```{r}
 modelo = lm(Y ~ X1 + X2, data = dados)
 summary(modelo)
+
+cov_beta = vcov(modelo) #matriz de covariancia dos parametros
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(cov_beta, caption = "Matriz de Variancia-Covariancia dos Betas", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
 ```
 
 E obtemos a seguinte equacao de regressao:
@@ -210,8 +218,8 @@ plot(results$X2,results$modelo.fitted.values)
 ## Realize o teste de Breusch-Pagan para a consistencia da variancia do erro com $\alpha = 0.01$.
 
 ```{r}
-SSR = anova(modelo)[[1,2]] #soma de quadrados da regressao
-SSE = anova(modelo)[[2,2]] #soma de quadrados do residuo
+SSR = anova(modelo)[[1,2]] + anova(modelo)[[2,2]] #soma de quadrados da regressao x1+x2
+SSE = anova(modelo)[[3,2]] #soma de quadrados do residuo
 
 n = length(dados$Y)
 
@@ -256,5 +264,51 @@ pf(f_obs,n-2,n-c)
 
 ### Estime $\beta_1$ e $\beta_2$ conjuntamente pelo metodo de bonferroni com uam confianca de 99%. interprete os resultados
 
+```{r}
+#calculo de B de bonferroni
 
+p = length(colnames(dados)) - 1 #numero de parametros retirando Y
+g = 2 #numero de betas a serem estimados
+beta = modelo$coefficients
+var_beta = diag(cov_beta)
+
+b = qt(1-(alfa)/(2*g),n-p)
+
+
+#calculo usando Bonferroni - beta 1
+
+ic_lower <- beta[2] - b*var_beta[2] # Limite inferior do intervalo de confiança
+ic_upper <- beta[2] + b*var_beta[2] # Limite superior do intervalo de confiança
+
+cat("Intervalo de confiança de Bonferroni para beta 1: [", ic_lower, ",", ic_upper, "]")
+
+#calculo usando Bonferroni - beta 2
+ic_lower <- beta[3] - b*var_beta[3] # Limite inferior do intervalo de confiança
+ic_upper <- beta[3] + b*var_beta[3] # Limite superior do intervalo de confiança
+
+cat("Intervalo de confiança de Bonferroni para beta 1: [", ic_lower, ",", ic_upper, "]")
+
+```
+### Calcule o coeficiente de determinacao multiplo $R^2$. Como ele é interpretado?
+
+```{r}
+SSTO = SSR+SSE
+
+r_2 = SSR/SSTO
+r_2
+#b)
+```
+
+
+### Calcule o coeficiente de determinacao simples entre $Y_i$ e $\hat{Y_i}$. Ele é igual ao coeficiente de determinacao multiplo?
+
+### Obtenha o intervalo de estimacao para $E(Y_h)$ quando $X_{h1} = 5$ e $X_{h2} = 4$ use um intervalo com 99% de confianca para sua estimativa
+
+```{r}
+
+```
+
+
+
+### Obtenha um intervalo de predicao para uma nova observacao $Y_{h(nova)}$ quando $X_{h1} = 5$ e $X_{h2} = 4$ use um intervalo com 99% de confianca para sua estimativa
 

@@ -111,7 +111,8 @@ dados = dados %>%
 modelo = lm(Y ~ X1 + X2, data = dados)
 summary(modelo)
 
-
+cov_beta = vcov(modelo) #matriz de covariancia dos parametros
+cov_beta
 #c)
 
 
@@ -161,8 +162,8 @@ plot(results$X2,residuos)
 
 #e)
 
-SSR = anova(modelo)[[1,2]] #soma de quadrados da regressao
-SSE = anova(modelo)[[2,2]] #soma de quadrados do residuo
+SSR = anova(modelo)[[1,2]] + anova(modelo)[[2,2]] #soma de quadrados da regressao x1+x2
+SSE = anova(modelo)[[3,2]] #soma de quadrados do residuo
 
 n = length(dados$Y)
 
@@ -209,10 +210,68 @@ pf(f_obs,n-2,n-c)
 
 p = length(colnames(dados)) - 1 #numero de parametros retirando Y
 g = 2 #numero de betas a serem estimados
+beta = modelo$coefficients
+var_beta = diag(cov_beta)
 
 b = qt(1-(alfa)/(2*g),n-p)
 
 
+#calculo usando Bonferroni - beta 1
+
+ic_lower <- beta[2] - b*var_beta[2] # Limite inferior do intervalo de confiança
+ic_upper <- beta[2] + b*var_beta[2] # Limite superior do intervalo de confiança
+
+cat("Intervalo de confiança de Bonferroni para beta 1: [", ic_lower, ",", ic_upper, "]")
+
+#calculo usando Bonferroni - beta 2
+ic_lower <- beta[3] - b*var_beta[3] # Limite inferior do intervalo de confiança
+ic_upper <- beta[3] + b*var_beta[3] # Limite superior do intervalo de confiança
+
+cat("Intervalo de confiança de Bonferroni para beta 1: [", ic_lower, ",", ic_upper, "]")
+
+#6.7
+
+#a)
+anova(modelo)
+SSTO = SSR+SSE
+
+r_2 = SSR/SSTO
+r_2
+#b)
+
+
+#6.8
+
+
+#a
+
+#estimativa intervalar da média de Y dado um x
+alfa = 0.05
+x_escolhido = c(1,5,4)
+
+g = 3 #numero de intervalos a ser estimado
+
+#calculo de B de bonferroni
+
+b = qt(1-(alfa)/(2*g),n-p)
+
+#calculo usando o erro padrao (verificar se esta correto) - scheffe
+y_new_hat <- x_escolhido %*% beta # Estimativa pontual da média de Y para o valor de X escolhido
+var_y = x_escolhido %*% 
+ic_lower <- y_new_hat - (s2/g)*sigma*sqrt(1 + (1/n) + ((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + (s2/g)*sigma*sqrt(1+(1/n)+((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
+
+cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
+cat("Intervalo de confiança de Scheffe para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
+
+#calculo usando o erro padrao (verificar se esta correto) - Bonferroni
+y_new_hat <- beta_0 + beta_1*x_escolhido # Estimativa pontual da média de Y para o valor de X escolhido
+ic_lower <- y_new_hat - b*sigma*sqrt(1 + (1/n) + ((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite inferior do intervalo de confiança
+ic_upper <- y_new_hat + b*sigma*sqrt(1+(1/n)+((x_escolhido - x_barra)^2)/(x_quadrado - n*x_barra^2)) # Limite superior do intervalo de confiança
+
+cat("O valor estimado Y quando X=", x_escolhido, "é:",y_new_hat)
+cat("Intervalo de confiança de Bonferroni para a média de Y quando X =", x_escolhido, ": [", ic_lower, ",", ic_upper, "]")
 
 
 
+#b

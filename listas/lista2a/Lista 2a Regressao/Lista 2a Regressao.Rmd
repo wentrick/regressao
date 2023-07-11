@@ -340,7 +340,6 @@ ic_upper <- y_new_hat + t*var_y_pred # Limite superior do intervalo de confianç
 
 cat("O valor estimado Y quando X1 e X2 =", c(x_0[2],x_0[3]), "é:",y_new_hat)
 cat("Intervalo de confiança de Bonferroni para a média de Y: [", ic_lower, ",", ic_upper, "]")
-
 ```
 
 

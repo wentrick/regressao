@@ -91,6 +91,8 @@ ggplot(df, aes(x = x, y = y)) +
 
 O modelo é aditivo podemos perceber que a escala ela dobra quando dobramos o X indicando que o valores sao maiores
 
+\newpage
+
 # Estabeleça a matriz $X$ e os vetores $Y$ $\beta$ e para os seguintes modelos (assuma que $i=1,2,3,4$).
 
 ## $Y_i = \beta_0+\beta_1X_{i1}+\beta_2X_{i1}X_{i2}+\epsilon_i$
@@ -98,7 +100,7 @@ O modelo é aditivo podemos perceber que a escala ela dobra quando dobramos o X 
 
 # Por que não é siginificativo atribuir um sínal ao coeficiente de correlação múltipla, embora façamos isso para o coeficiente de correlação linear simples?
 
-
+\newpage
 # Preferência de marca : Vamos estudar a relacao entre gosto da marca (Y),Teor de Umidade ($X_1$) e Doçura ($X_2$).
 
 ```{r}

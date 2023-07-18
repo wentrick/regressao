@@ -40,7 +40,7 @@ knitr::write_bib(
 
 # Considere a função resposta: $E(Y) = 25+3X_1+4X_2+1,5X_1X_2$
 
-##  Faça o gráfico de $E(Y) \times X_1$ quando $X_2 = 3$ e $X_2 = 6$ .
+##  Faça o gráfico de $E(Y) \times X_1$ quando $X_2 = 3$ e $X_2 = 6$.
 
 ```{r}
 #X2 = 3

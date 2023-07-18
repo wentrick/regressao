@@ -28,3 +28,4 @@ if (!require("rmarkdown")) install.packages("rmarkdown")
 if (!require("knitr")) install.packages("knitr")
 if (!require("bookdown")) install.packages("bookdown")
 if (!require("quarto")) install.packages("quarto")
+#teste

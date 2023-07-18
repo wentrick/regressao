@@ -12,7 +12,7 @@ polinomio <- function(x1,x2) {
 curve(polinomio(x1 =x ,x2 = 3), from = -10, to = 10, xlab = "x", ylab = "y", main = "Gráfico do Polinômio")
 
 
-# Fazendo pelo ggplot
+# Fazendo pelo ggplot2
 
 # Criar um data frame com os valores de x
 x <- seq(0, 20, length.out = 100)

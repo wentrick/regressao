@@ -1,0 +1,12 @@
+---
+title: "Relatório Final - Análise de Regressao Linear"
+author: "Davi Wentrick Feijó"
+date: "2023-07-08"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+

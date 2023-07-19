@@ -1,6 +1,7 @@
-pacman::p_load(tidyverse,readxl,GGally)
+pacman::p_load(tidyverse,readxl,GGally,olsrr)
 dados <- read_excel("projeto_final/DADOS_TRABALHO_2023_1.xlsx")
 
+set.seed(361)
 #formatando o banco
 
 dados = dados %>%
@@ -15,17 +16,30 @@ dados = dados %>%
 
 amostra = sample_n(dados, 300)
 
+x = round(cor(amostra[,c(2,3,4,6,8,10)]),3)
+
+ggpairs(amostra[,c(1:4)])
+
+ggcorrplot::ggcorrplot(x,lab = TRUE)
+
+modelo = lm(X1~X2+X3+X4+X5+X6+X7+X8+X9+X10+X11,data = amostra)
+summary(modelo)
+
+modelo = lm(X1~X2+X3+X5+X6+X7+X8+X9+X10+X11,data = amostra)
+summary(modelo)
+
+modelo = lm(X1~X3+X5+X6+X7+X8+X9+X10+X11,data = amostra)
+summary(modelo)
 
 
 
+model <- lm(X1~X2+X3+X5+X6+X7+X8+X9+X10+X11, data = amostra)
+k <- ols_step_all_possible(model)
+plot(k)
 
-if (!require("remotes")) install.packages("remotes")
-remotes::install_github("uham-bio/UHHformats", build_vignettes = TRUE)
 
+modelo = lm(X1~X2+X8+X9+X10,data = amostra)
+summary(modelo)
 
-
-if (!require("rmarkdown")) install.packages("rmarkdown")
-if (!require("knitr")) install.packages("knitr")
-if (!require("bookdown")) install.packages("bookdown")
-if (!require("quarto")) install.packages("quarto")
-#teste
+modelo = lm(X1~X2+X6+X8+X9+X10,data = amostra)
+summary(modelo)

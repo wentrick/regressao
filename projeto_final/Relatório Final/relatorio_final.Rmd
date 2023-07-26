@@ -1,0 +1,979 @@
+---
+title: "Relatório Final"
+subtitle: "Análise de Regressao Linear"
+author: "Davi Wentrick Feijó - 20016806, Ana Beatriz de Carvalho Lopes - 200034812, Leonardo dos Reis Andrade -211029030"
+header_left: "Relatório Final"
+header_right: "01/2023"
+date: \today
+fontsize: 11pt
+german: false # default is Englisht
+output: 
+  UHHformats::pdf_simple:
+    toc: true
+    toc_depth: 3
+    font: "Helvetica" # alternative: "TheSansUHH"  
+---
+
+```{r setup, include = FALSE}
+# settings --> keep this chunk as it is!
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, 
+  warning = FALSE, error = FALSE, cache = TRUE,
+  fig.path='figs/', cache.path = 'cache/')
+```
+
+```{r load-packages, include = FALSE}
+# packages
+pacman::p_load(MASS,knitr,kableExtra,xtable,plyr,tidyverse,readxl,olsrr,ggpubr,kableExtra,ggthemes,dplyr,car,caret,caTools,lmtest)
+
+dados <- read_excel("DADOS_TRABALHO_2023_1.xlsx")
+set.seed(361)
+#formatando o banco
+
+dados = dados %>%
+  mutate(ID = as.numeric(ID),
+         X5 = as.factor(X5),
+         X7 = as.factor(X7),
+         X9 = as.factor(X9),
+         X11 = as.factor(X11)) %>%
+  dplyr::select(-ID)
+
+
+
+#train = sample_n(dados, 300)
+
+sample <- sample.split(dados$X1, SplitRatio = 0.575)
+train  <- subset(dados, sample == TRUE)
+test   <- subset(dados, sample == FALSE)
+
+# Supondo que você tenha os dados nas colunas x1 (valor da casa) e x2 (presença de ar condicionado) no dataframe "dados"
+# Crie o gráfico de dispersão com cores para representar a presença ou ausência de ar condicionado
+x1<- dados$X1
+x5<-dados$X5
+```
+
+```{r generate-package-refs, include=FALSE}
+# Create a bib database for R packages used above
+# NOTE: RUN THIS CODE CHUNK MANUALLY TO CREATE FILE BEFORE KNITTING
+knitr::write_bib(
+  x = c(.packages(), 'bookdown', 'rmarkdown', 'UHHformats',
+    # Add here now all packages that are loaded above:
+    'knitr', 'kableExtra', 'xtable', 'tidyverse'),
+  file = 'bib/packages.bib'
+)
+```
+
+
+<!-- This is how you can define comments in an .Rmd file (outside the R code snippets) -->
+
+
+# Introdução
+
+
+Neste estudo, conduziremos uma análise detalhada de um conjunto de dados proveniente de uma cidade americana. O conjunto de dados é composto por informações de venda de 522 casas que foram vendidas no último ano. O propósito desse estudo é a construção de um modelo preditivo que busca prever o preço de venda de residências em função de características da casa e sua vizinhança. 
+
+A estrutura deste trabalho é organizada em seções distintas para facilitar a compreensão dos resultados obtidos. Na segunda seção, conduziremos uma análise descritiva abrangente das variáveis presentes no conjunto de dados. Nessa etapa, exploraremos as características individuais, identificando tendências e padrões que possam influenciar o valor de venda das casas. Serão realizadas estatísticas descritivas, como média, mediana, valor mínimo dos dados, valor máximo dos dados, quartis, e gráficos para visualização dos dados. 
+
+Na terceira seção, abordaremos a seleção criteriosa das variáveis que serão adotadas no modelo preditivo. Utilizaremos técnicas de Regressão Linear, para identificar quais características têm maior relevância. Essa etapa é crucial para garantir a eficiência e a precisão do modelo final. 
+
+A seção quatro é dedicada ao desenvolvimento do modelo preditivo propriamente dito, onde utilizaremos regressão para criar um modelo que seja capaz de generalizar bem os dados e fazer previsões precisas.  
+
+Por fim, na seção cinco, apresentaremos os resultados obtidos com o modelo preditivo. 
+
+Com essas etapas claramente definidas e uma abordagem metodológica sólida, esperamos que este estudo contribua significativamente para o entendimento do mercado imobiliário dessa cidade americana.
+
+\newpage
+
+# Objetivos
+
+Para esse trabalho, usaremos Regressivo Linear Múltipla no banco de dados que apresenta informações observacionais sobre onze características diferentes de cada casa. Para podermos ter controle sobre o modelo, dividimos a train em 2 partes, a primeira, composta por 300 trains selecionadas aleatoriamente, para a construção do modelo, e a segunda com as 222 restantes visando a validação do modelo preditivo.
+
+Como forma de mensurar a seleção de variáveis do modelo usaremos na seleção de variáveis os critérios R², Cp de Mallows e regressão “Stepwise”. As variáveis que constam no banco de dados são o preço de venda, tamanho da casa, número de quartos, número de banheiros, presença de ar-condicionado, tamanho da garagem, presença de piscina, idade de casa, obtida a partir do ano de construção, qualidade da construção, tamanho do terreno e proximidade da "Highway"(proximidade da rodovia). Essas variáveis representam elementos que podem influenciar o preço de venda das casas.
+
+\newpage
+
+# Metodologia
+
+Coleta de dados: Os dados utilizados neste estudo foram obtidos a partir de um conjunto de informações sobre a venda de 522 casas em uma cidade americana no último ano. As variáveis incluídas no banco de dados são: preço de venda, tamanho da casa, número de quartos, número de banheiros, presença de ar-condicionado, tamanho da garagem, presença de piscina, idade da casa (obtida a partir do ano de construção), qualidade da construção, tamanho do terreno e proximidade da "Highway" (proximidade da rodovia). 
+
+Análise descritiva das variáveis: Foi realizada uma análise descritiva das variáveis presentes no banco de dados. Foram apresentados histogramas e gráficos de dispersão para as variáveis, permitindo uma melhor compreensão da distribuição e da relação entre as variáveis. 
+
+Seleção de variáveis:  Para essa seleção, foram utilizados critérios como o coeficiente de determinação (R²), o critério Cp de Mallows e o método de regressão "Stepwise". Com base nessas análises, foram escolhidas as variáveis mais relevantes para a construção do modelo preditivo. 
+
+Modelo e validação: O modelo de regressão linear múltipla foi desenvolvido usando as variáveis selecionadas na etapa anterior. A train foi dividida em duas partes: uma continha 300 trains selecionadas aleatoriamente para construir o modelo e a outra continha as 222 trains restantes para validar o modelo. 
+
+Resultados:  Os resultados obtidos com o modelo. Foram apresentados os coeficientes estimados para cada variável e a qualidade de ajuste do modelo, medido pelo coeficiente de determinação (R²) e pelo F-statistic. Também foram analisados os resíduos do modelo para verificar a adequação das premissas da regressão linear. 
+
+Transformação dos dados: Durante a modelagem, foi realizada uma transformação nos dados, sendo o valor do preço de venda convertido em escala logarítmica, para melhorar o cumprimento das premissas do modelo e obter resultados mais precisos. 
+
+Redução do Modelo: Com base em análises adicionais, o modelo foi reduzido, considerando apenas as variáveis mais importantes e relevantes para prever o preço de venda das casas. 
+
+Análise e discussão: Os resultados do modelo foram analisados em relação aos objetivos propostos, avaliando a relevância das variáveis selecionadas e a eficácia do modelo preditivo. 
+
+\newpage
+
+# Resultados 
+
+## Analise descritiva das variáveis 
+
+
+### Valor de Venda - Variavel Resposta - X1
+```{r}
+# Crie o histograma com cores personalizadas
+options(scipen = 999)
+
+hist(dados$X1, 
+     main = "Histograma dos Valores de Venda", 
+     xlab = "Valor de Venda",
+     col = "steelblue",  # Cor das barras
+     border = "white",   # Cor das bordas das barras
+     breaks = 20         # Número de bins
+)
+```
+```{r}
+qqnorm(dados$X1)
+qqline(dados$X1)
+```
+
+\newpage
+
+```{r}
+summary(dados$X1)
+```
+
+```{r}
+shapiro.test(dados$X1)
+```
+
+Das onze variáveis apresentadas no banco de dados, a variável “preço de venda” é nossa variável resposta, sendo ela uma variável quantitativa e continua.
+Esses da medida resumo nos mostra que a maior parte dos preços estão concentrados e R$ 180.000 até R$ 230.000, como indicado pela mediana., conforme podemos observar no gráfico 1.
+Ao realizar o teste de normalidade de Shapiro-Wilk na variável "preço de venda", o resultado indica que ela não segue uma distribuição normal, pois o p-valor associado ao teste foi menor que 2.2e-16 (um valor extremamente pequeno). No entanto, a distribuição da variável parece possuir uma calda alongada, provavelmente devido à presença de um valor atípico (outlier) com o valor de R$ 920.000
+Essa informação sugere que a distribuição dos preços de venda é assimétrica e é afetada pela presença de preços muito altos (outliers). Portanto, é importante levar em consideração essa característica ao analisar e modelar essa variável, para evitar que ela distorça as análises estatísticas e as conclusões feitas a partir dos dados.
+
+\newpage
+
+### Tamanho da Casa - X2
+
+
+
+```{r}
+#histograma do Tamanho da casa:
+hist(dados$X2, 
+     main = "Histograma do Tamanho da casa", 
+     xlab = "Tamanho da casa",
+     col = "steelblue",  # Cor das barras
+     border = "white",   # Cor das bordas das barras
+     breaks = 20         # Número de bins
+)
+```
+
+```{r}
+ggplot(dados,aes(dados$X1,dados$X2, color = I("steelblue"))) +
+  geom_point() + 
+  theme_classic()+
+  stat_cor(method = "pearson")+
+  labs(title = "Gráfico de Dispersão - Tamanho da casa",y = "Valor da casa", x="Tamanho da casa")
+```
+
+
+
+```{r}
+summary(dados$X2)
+```
+
+
+```{r}
+shapiro.test(dados$X2)
+```
+A variável “tamanho da casa”, também é uma variável quantitativa e contínua, medida em metros quadrados.
+A maior parte dos tamanhos das casas concentra-se na faixa em torno de 2.000 pés quadrados, conforme evidenciado pela mediana e o intervalo entre o primeiro quartil e o terceiro quartil, e o histograma de tamanho das casas mostra a distribuição dos valores, sendo possível perceber uma concentração de dados em torno da faixa de 2.000 pés quadrados.
+  Além disso, foi realizado o teste de normalidade de Shapiro-Wilk na variável "tamanho da casa". O resultado indica que a distribuição não segue uma distribuição normal, com p-valor muito pequeno (p < 2,2e-16). Isso significa que a distribuição dos tamanhos das casas é assimétrica e não pode ser considerada normal.
+A partir do gráfico de dispersão entre o tamanho da casa e o valor da casa, podemos analisar a relação entre essas duas variáveis, e ver que temos uma correlação positiva moderada
+ 
+\newpage 
+ 
+###  Número de Quartos - X3
+
+
+```{r}
+cores_azul <- c("#1f77b4", "#aec7e8", "#9edae5", "#3182bd", "#6baed6", "#bdd7e7", "#6baed6")
+
+#box plot 
+ggplot(dados, aes(x = factor(X3), y = X1, fill = factor(X3))) +
+  geom_boxplot() +
+  scale_fill_manual(values = cores_azul, name = "Número de quartos") +  # Personalizar o nome da legenda
+  theme_classic() +
+  labs(title = "Box Plot - Número de quartos na casa",
+       y = "Valor da casa",
+       x = "Número de quartos") +
+  scale_x_discrete(limits = 1:7)+  # Limitar o eixo x até o valor 7
+  theme(legend.position = "none")
+```
+
+```{r}
+tabela_frequencias <- as.data.frame(dados) %>%
+  group_by(X3) %>%
+  dplyr::summarise(frequencia = n()) %>%
+  mutate(percentual = frequencia / sum(frequencia) * 100)
+colnames(tabela_frequencias) = c("Número de quartos","Frequencia","Porcentual")
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(tabela_frequencias, caption = "Tabela de frequencia do Número de quartos", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
+```
+
+```{r}
+shapiro.test(dados$X3)
+```
+
+Nossa terceira variável refere-se ao número de cômodos que as casas estudadas possuem e é uma variável quantitativa discreta. Acredita-se que casas com maior número de cômodos sejam mais valorizadas. A categoria com menor número de casas é a de 7 quartos, que possui apenas 3 casas, e a categoria com maior número de casas é a de 3 quartos, que possui 202 casas.
+Além disso, foi realizada uma análise do box plot gráfico para a variável "número de quartos" em relação ao "valor da casa". O box plot mostra a distribuição e dispersão dos dados em relação às diferentes categorias de quartis. É possível visualizar a mediana, os quartis e os possíveis valores atípicos.
+Por mais que o teste de normalidade de Shapiro-Wilk seja aplicado à variável "número de trimestres", o resultado indica que a distribuição não segue uma distribuição normal, pois o p-valor associado ao teste é menor que 2,2e-16. Isso significa que a distribuição do número de trimestres não é uma distribuição normal.
+Em suma, uma análise revela uma distribuição dos quartos nas casas estudadas e destaca que a maioria das casas tem entre 2 e 4 quartos.
+
+\newpage
+
+### Número de Banheiros - X4
+
+```{r}
+cores_azul <- c("#1f77b4", "#aec7e8", "#9edae5", "#3182bd", "#6baed6", "#bdd7e7", "#6baed6")
+
+#box plot 
+ggplot(dados, aes(x = factor(X4), y = X1, fill = factor(X4))) +
+  geom_boxplot() +
+  scale_fill_manual(values = cores_azul, name = "Número de banheiros") +  # Personalizar o nome da legenda
+  theme_classic() +
+  labs(title = "Box Plot - Número de banheiros na casa",
+       y = "Valor da casa",
+       x = "Número de banheiros") +
+  scale_x_discrete(limits = 1:7)+  # Limitar o eixo x até o valor 7
+  theme(legend.position = "none")
+```
+
+
+```{r}
+tabela_frequencias <- as.data.frame(dados) %>%
+  group_by(X4) %>%
+  dplyr::summarise(frequencia = n()) %>%
+  mutate(percentual = frequencia / sum(frequencia) * 100)
+colnames(tabela_frequencias) = c("Número de banheiros","Frequencia","Porcentual")
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(tabela_frequencias, caption = "Tabela de frequencia do Número de banheiros", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
+```
+
+```{r}
+shapiro.test(dados$X4)
+```
+
+A variável "número de banheiros" representa o número de banheiros que as casas estudadas possuem e é uma variável quantitativa discreta.
+Podemos observar pela tabela que a categoria com menor número de casas é a que possui 7 banheiros, e o maior número de casas está na categoria com 3 banheiros.
+Além disso, foi realizada uma análise do box plot gráfico, para a variável "número de banheiros" em relação ao "valor da casa". O box plot mostra a distribuição e dispersão dos dados em relação às diferentes categorias de banheiros. É possível visualizar a mediana, os quartis e os possíveis valores atípicos.
+Quanto ao teste de normalidade de Shapiro‐Wilk aplicado à variável "número de banheiros", o resultado indica que a distribuição não segue uma distribuição normal, pois o p-valor associado ao teste foi menor que 2,2e-16. Isso significa que a distribuição do número de banheiros não é uma distribuição normal. 
+Em resumo, a análise descritiva da variável revela uma distribuição dos banheiros nos domicílios estudados e destaca que a maioria dos domicílios possui entre 2 e 4 banheiros.
+
+\newpage
+
+### Presença de Ar-Condicionado - X5
+
+```{r}
+ggplot(dados, aes(x = factor(X5), y = x1, fill = factor(X5))) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(title = "Box Plot - Valor da Casa por Ar Condicionado",
+       x = "Presença de Ar Condicionado",
+       y = "Valor da Casa") +
+  scale_fill_manual(values = c("0" = "blue", "1" = "steelblue"),
+                    labels = c("Não", "Sim"))
+```
+
+
+```{r}
+tabela_frequencias <- as.data.frame(dados) %>%
+  group_by(X5) %>%
+  dplyr::summarise(frequencia = n()) %>%
+  mutate(percentual = frequencia / sum(frequencia) * 100)
+colnames(tabela_frequencias) = c("Ar Condicionado","Frequencia","Porcentual")
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(tabela_frequencias, caption = "Tabela de frequencia do Ar Condicionado", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
+```
+
+A variável "Ar-Condicionado" é uma variável qualitativa, representando a presença ou ausência de ar-condicionado nas residências estudadas. É codificado com 1 para indicar que tem ar-condicionado e 0 para indicar que não tem ar-condicionado.
+A maioria das residências (83,14%) possui ar-condicionado, enquanto uma proporção menor (16,86%) não possui ar-condicionado.
+Uma variável qualitativa não é normal porque não possui uma escala numérica contínua e, portanto, não pode ser representada por valores passíveis de cálculos matemáticos, como a média ou o desvio padrão.
+
+\newpage
+
+### Tamanho da Garagem - X6
+
+```{r}
+cores_azul <- c("#1f77b4", "#aec7e8", "#9edae5", "#3182bd", "#6baed6", "#bdd7e7", "#6baed6")
+
+# Criar o box plot com cores em tons de azul e remover a legenda lateral
+ggplot(dados, aes(x = factor(X6), y = X1, fill = factor(X6))) +
+  geom_boxplot() +
+  scale_fill_manual(values = cores_azul, name = "Número de banheiros") +
+  theme_classic() +
+  labs(title = "Box Plot - Número de carros que podem ser guardados na garagem",
+       y = "Valor da casa",
+       x = "Número de carros") +
+  scale_x_discrete(limits = 1:7) +
+  theme(legend.position = "none")  # Remover a legenda lateral das cores
+```
+
+```{r}
+tabela_frequencias <- as.data.frame(dados) %>%
+  group_by(X6) %>%
+  dplyr::summarise(frequencia = n()) %>%
+  mutate(percentual = frequencia / sum(frequencia) * 100)
+colnames(tabela_frequencias) = c("Número de Garagens","Frequencia","Porcentual")
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(tabela_frequencias, caption = "Tabela de frequencia do Tamanho da Garagem", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
+```
+
+```{r}
+shapiro.test(dados$X6)
+```
+
+A variável “tamanho da garagem” representa a capacidade de carros que podem ser guardados na garagem da casa. É uma variável quantitativa discreta, pois é composta por números inteiros que representam a quantidade de carros. As casas com garagem têm valor 0 atribuído.
+Além disso, foi realizada uma análise do box plot gráfico para esta variável em relação ao "valor da casa". O box plot mostra a distribuição e dispersão dos dados em relação às diferentes categorias de tamanhos de garagem. É possível verificar que a maioria das casas tem capacidade para garagem para 2 carros, sete casas não têm garagem, enquanto apenas 3 casas têm capacidade para 4 ou mais carros.
+Quanto ao teste de normalidade de Shapiro-Wilk aplicado à variável "tamanho da garagem", o resultado indica que a distribuição não segue uma distribuição normal, pois o p-valor associado ao teste é menor que 2,2e-16. Isso significa que a distribuição de tamanhos de garagem não é uma distribuição normal.
+
+\newpage
+
+### Piscina - X7
+
+```{r}
+ggplot(dados, aes(x = factor(X7), y = x1, fill = factor(X7))) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(title = "Box Plot - Valor da Casa com Presença de piscina",
+       x = "Presença de piscina",
+       y = "Valor da Casa") +
+  scale_fill_manual(values = c("0" = "blue", "1" = "steelblue"),
+                    labels = c("Não", "Sim"))
+```
+
+```{r}
+tabela_frequencias <- as.data.frame(dados) %>%
+  group_by(X7) %>%
+  dplyr::summarise(frequencia = n()) %>%
+  mutate(percentual = frequencia / sum(frequencia) * 100)
+colnames(tabela_frequencias) = c("Presença de piscina","Frequencia","Porcentual")
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(tabela_frequencias, caption = "Tabela de frequencia da Presença de piscina", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
+```
+
+A variável “presença de piscina” é uma variável qualitativa, indicando se o domicílio possui piscina ou não. É codificado com 1 para indicar que a casa tem piscina e 0 para indicar que não tem piscina.
+Uma variável qualitativa não é normal porque não possui uma escala numérica contínua e, portanto, não pode ser representada por valores passíveis de cálculos matemáticos, como a média ou o desvio padrão.
+No box plot apresentado, é possível visualizar a distribuição dos valores das casas com base na presença ou ausência de piscina. E mostra-nos que a maioria dos agregados familiares (93,10%) não tem piscina, e apenas um pequeno número de agregados familiares (6,90%) tem piscina. 
+
+\newpage
+
+### Idade do Imóvel - X8
+
+```{r}
+# Supondo que o ano atual é 2023 e a coluna com o ano de nascimento é chamada "x8"
+ano_atual <- 2023
+
+dados <- dados %>%
+  mutate(idade = ano_atual - dados$X8)
+
+hist(dados$idade,
+     main = "Histograma da idade da casa", 
+     xlab = "Idade da casa ",
+     col = "steelblue",  # Cor das barras
+     border = "white",   # Cor das bordas das barras
+     breaks =         # Número de bins
+)
+```
+
+```{r}
+
+ggplot(dados,aes(dados$X1,dados$idade, color = I("steelblue"))) + 
+  geom_point() + 
+  theme_classic()+
+  stat_cor(method = "pearson")+ 
+  labs(title = "Gráfico de Dispersão - Idade da casa", y = "Valor da casa", x="Idade da casa")
+```
+
+```{r}
+shapiro.test(dados$idade)
+```
+
+A variável “idade da casa” refere-se ao ano em que foi construída, o ano de referência “2023” foi utilizado para calcular a idade de cada casa antes de iniciar a análise e só depois trabalhar com ela. Essa variável é quantitativa discreta, pois contém valores numéricos inteiros que representam a idade do domicílio.
+O histograma mostrado mostra a distribuição dos valores de idade do agregado familiar em diferentes categorias de idade. A frequência de domicílios de 40 a 60 anos é maior, observa-se também que o número de domicílios diminui com o aumento da idade, chegando a 120 domicílios com cerca de 100 anos.
+Além disso, gráficos de dispersão entre as variáveis "idade da casa" e "valor da casa" foram analisados. O enredo disperso mostra que você é uma pessoa fraca e negativa.
+Quanto ao teste de normalidade de Shapiro-Wilk aplicado à variável "idade do domicílio", o resultado indica que a distribuição não segue uma distribuição normal. O p-valor associado ao teste foi inferior a 0,05 (p-valor = 1,833e-10), o que significa que a distribuição dos dados é significativamente diferente da normal.
+
+\newpage
+
+### Qualidade de Construção - X9
+
+```{r}
+ggplot(dados, aes(x = factor(X9), y = x1, fill = factor(X9))) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(title = "Box Plot - Valor da Casa por qualidade da construção",
+       x = "Qualidade da construção",
+       y = "Valor da Casa") +
+  scale_fill_manual(values = c("1" = "blue", "2" = "steelblue", "3" ="lightblue"),
+                    labels = c("Alta qualidade", "Média qualidade", "Baixa qualidade"))
+```
+
+```{r}
+tabela_frequencias <- as.data.frame(dados) %>%
+  group_by(X9) %>%
+  dplyr::summarise(frequencia = n()) %>%
+  mutate(percentual = frequencia / sum(frequencia) * 100)
+colnames(tabela_frequencias) = c("qualidade da construção","Frequencia","Porcentual")
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(tabela_frequencias, caption = "Tabela de frequencia da qualidade da construção", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
+```
+
+A Qualidade da construção foi selecionada sendo uma variável qualitativa, que tenta mensurar a qualidade do material empregado na construção, essa variável conta com bastante subjetividade por parte do avaliador, sendo pontuada com 1 para o alta qualidade, 2 para média qualidade e 3 para imóveis de construção avaliados como baixa qualidade.
+A maioria das residências (55,56%) foi classificada como "Qualidade de construção média" e uma proporção menor de residências (13,03%) recebeu uma classificação de "Qualidade de construção alta”
+O box plot apresentado mostra a distribuição dos valores das casas em relação à qualidade da construção. Esta visualização permite verificar que quanto mais casas mais carros estão associados a uma maior qualidade de construção. 
+
+\newpage
+
+### Tamanho do Terreno - X10
+
+```{r}
+#histograma do tamanho do terreno
+hist(dados$X10,
+     main = "Histograma do Tamanho do terreno", 
+     xlab = "Tamanho do terreno",
+     col = "steelblue",  # Cor das barras
+     border = "white",   # Cor das bordas das barras
+     breaks =         # Número de bins
+)
+
+```
+
+```{r}
+ggplot(dados,aes(dados$X1,dados$X10, color = I("steelblue"))) + 
+  geom_point() + 
+  theme_classic()+
+  stat_cor(method = "pearson")+ 
+  labs(title = "Gráfico de Dispersão - Tamanho do terreno", y = "Valor da casa", x="Tamanho do terreno")
+```
+
+```{r}
+shapiro.test(dados$X10)
+```
+
+A variável "tamanho do terreno" representa o tamanho do terreno em metros quadrados. É uma variável quantitativa contínua, pois consiste em valores numéricos que podem variar ao longo de uma escala contínua.
+Com o histograma podemos ver que os terrenos em torno de 50.000 a 100.000 m² possuem uma frequência de pico.
+Além disso, foi realizada uma análise do gráfico de dispersão entre esta variável "e o" valor da casa ". O gráfico de dispersão mostra como varia o valor da casa em relação ao tamanho do terreno. É possível observar que existe uma forte correlação positiva.
+Na medida em que o teste de normalidade de Shapiro-Wilk é aplicado à variável "Tanmanho do Terreno" (X10), o resultado indica que a distribuição não segue uma distribuição normal. O p-valor associado ao teste é inferior a 0,05 (p-valor < 2,2e-16), o que significa que os dados têm uma distribuição significativamente diferente da normal.
+
+\newpage
+
+### Proximidade da "Highway" - X11
+
+```{r}
+ggplot(dados, aes(x = factor(X11), y = x1, fill = factor(X11))) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(title = "Box Plot - Valor da Casa com proximidade da “highway",
+       x = "Presença de piscina",
+       y = "Valor da Casa") +
+  scale_fill_manual(values = c("0" = "blue", "1" = "steelblue"),
+                    labels = c("Não", "Sim"))
+
+```
+
+```{r}
+tabela_frequencias <- as.data.frame(dados) %>%
+  group_by(X11) %>%
+  dplyr::summarise(frequencia = n()) %>%
+  mutate(percentual = frequencia / sum(frequencia) * 100)
+colnames(tabela_frequencias) = c("proximidade da highway","Frequencia","Porcentual")
+```
+
+```{r, results = "asis", eval=ifelse(nzchar(system.file(package = "xtable")), TRUE, FALSE)}
+xt <- xtable(tabela_frequencias, caption = "Tabela de frequencia da proximidade da highway", 
+  label = "tab:xtable_tab")
+print(xt, comment = FALSE, caption.placement = "top", booktabs = TRUE)
+```
+
+Por último, a variável proximidade da "Highway" avalia se a casa se encontra próxima ou distante da avenida.
+
+\newpage
+
+## Modelagem
+
+### Correlação entre as Variaveis
+
+```{r}
+x = round(cor(dados[,c(2,3,4,6,8,10)]),3)
+
+ggcorrplot::ggcorrplot(x,lab = TRUE)
+```
+Podemos perceber algumas correlaçoes moderadas mas nenhuma muito forte entre as variaveis. Logo o problema de multicolinearidade nao está presente.
+
+
+\newpage
+
+### Modelo Completo
+
+Aqui vamos rodar o modelo utilizando todas as variaveis disponiveis, a ideia é observar os resultados e ter uma base para saber quais variaveis manter e quais variaveis retirar do modelo.
+
+
+```{r}
+modelo_completo = lm(X1~X2+X3+X4+X5+X6+X7+X8+X9+X10+X11,data = train)
+summary(modelo_completo)
+```
+
+
+\newpage
+
+Vamos analisar os residuos desse modelo:
+```{r}
+#Analise de residuo do modelo completo
+
+resid = residuals(modelo_completo)
+cook = cooks.distance(modelo_completo)
+std_resid <- rstandard(modelo_completo)
+```
+
+
+```{r,echo=FALSE, message=FALSE, results='hide'}
+layout(matrix(c(1,2,1,2,3,4,3,4), 2, 2, byrow = TRUE),
+       widths=c(2,2), heights=c(1,2))
+
+influencePlot(modelo_completo)
+plot(cook, type="h",lwd=3,col="red", ylab="Cook's Distance")
+abline(0,0,col="red")
+qqPlot(resid,id = FALSE, ylab="Residuals", main="")
+hist(resid, xlab="Residuals", main="",nclass=30,col="orange")
+```
+
+
+```{r,out.width="100%"}
+layout(matrix(c(1,2,1,2,3,4,3,4), 2, 2, byrow = TRUE),
+       widths=c(2,2), heights=c(1,2))
+
+plot(seq(1,length(modelo_completo$fitted.values)), std_resid, xlab="Predictor", ylab="Std. Residual", main="Predictor vs Residual")
+abline(h=0, col="red", lty=2)
+plot(modelo_completo$fitted.values, std_resid, xlab="Fitted", ylab="Std Resid", main="Fitted Vs Residual")
+qqPlot(std_resid, id = FALSE ,main="QQ Plot Std. Residuals")
+hist(std_resid, main="Histogram of Std. Residuals")
+```
+\newpage
+
+Vamos observar os VIFs e a Tolerancia para ver se temos multicolinearidade entre as variaveis
+
+```{r}
+ols_vif_tol(modelo_completo)
+```
+
+Vale notar que VIFs muito altos pode indicar multicolinearidade, assim como uma tolerancia muito baixa (<0.1). Nos Resultados obtido podemos percerber que o VIF na variavel categorica 9 na categoria 3 está alto porem nao o suficiente para indicar multicolinearidade ja que sua tolerancia esta acima de 0.1
+
+Vamos realizar o teste de Breusch-Pagan e Normalidade dos residuos
+
+```{r}
+shapiro.test(modelo_completo$residuals)
+bptest(modelo_completo)
+```
+
+Pelos resultados obtidos podemos perceber que o modelo nao atende os pressupostos de normalidade nem de homocedasticidade dos residuos, podemos ver claramente uma tendencia do aumento da variancia em relacao aos valores ajustados. Logo faz-se necessario uma transformacao das variaveis com o objetivo de atender esses pressupostos.
+
+\newpage
+
+### Modelo Transformado
+
+Nessa etapa vamos utilizar a transformação de Box-Cox para ajudar a melhorar a aderência dos dados aos pressupostos de normalidade e homocedasticidade, permitindo que os resultados da regressão sejam mais válidos e precisos. É importante lembrar que a interpretação dos resultados após a transformação deve ser feita considerando a escala dos dados transformados, o que pode ser uma dificuldade.
+
+```{r}
+resultado_boxcox <- boxcox(modelo_completo, plotit = TRUE)
+
+lambda_otimo <- resultado_boxcox$x[which.max(resultado_boxcox$y)]
+
+cat("O lambda otimo obtido pelo metodo de Box-Cox é:",lambda_otimo)
+```
+
+Uma vez obtido o $\lambda$ da transformacao podemos aplicar no nosso banco de dados de teste e treino.
+
+```{r}
+train_bc  = train %>%
+  mutate(X1 = (X1^lambda_otimo - 1) / lambda_otimo,
+         X2 = (X2^lambda_otimo - 1) / lambda_otimo,
+         X3 = (X3^lambda_otimo - 1) / lambda_otimo,
+         X4 = (X4^lambda_otimo - 1) / lambda_otimo,
+         X6 = (X6^lambda_otimo - 1) / lambda_otimo,
+         X8 = (X8^lambda_otimo - 1) / lambda_otimo,
+         X10 = (X10^lambda_otimo - 1) / lambda_otimo)
+
+# Supondo que você tenha um dataframe chamado "meu_dataframe" e queira substituir valores -Inf na coluna "coluna_infinitos"
+train_bc$X6 <- replace(train_bc$X6, is.infinite(train_bc$X6), 0)
+train_bc$X3 <- replace(train_bc$X3, is.infinite(train_bc$X3), 0)
+train_bc$X4 <- replace(train_bc$X4, is.infinite(train_bc$X4), 0)
+```
+
+```{r}
+test_bc  = test %>%
+  mutate(X1 = (X1^lambda_otimo - 1) / lambda_otimo,
+         X2 = (X2^lambda_otimo - 1) / lambda_otimo,
+         X3 = (X3^lambda_otimo - 1) / lambda_otimo,
+         X4 = (X4^lambda_otimo - 1) / lambda_otimo,
+         X6 = (X6^lambda_otimo - 1) / lambda_otimo,
+         X8 = (X8^lambda_otimo - 1) / lambda_otimo,
+         X10 = (X10^lambda_otimo - 1) / lambda_otimo)
+
+# Supondo que você tenha um dataframe chamado "meu_dataframe" e queira substituir valores -Inf na coluna "coluna_infinitos"
+test_bc$X6 <- replace(test_bc$X6, is.infinite(test_bc$X6), 0)
+test_bc$X3 <- replace(test_bc$X3, is.infinite(test_bc$X3), 0)
+test_bc$X4 <- replace(test_bc$X4, is.infinite(test_bc$X4), 0)
+```
+
+\newpage
+
+Em seguida podemos obter nosso modelo completo com base nos dados transformados
+
+```{r}
+modelo_completo = lm(X1~X2+X3+X4+X5+X6+X7+X8+X9+X10+X11,data = train_bc)
+summary(modelo_completo)
+```
+
+\newpage
+
+Vamos analisar os residuos desse modelo:
+```{r}
+#Analise de residuo do modelo completo
+
+resid = residuals(modelo_completo)
+cook = cooks.distance(modelo_completo)
+std_resid <- rstandard(modelo_completo)
+```
+
+
+```{r,echo=FALSE, message=FALSE, results='hide'}
+layout(matrix(c(1,2,1,2,3,4,3,4), 2, 2, byrow = TRUE),
+       widths=c(2,2), heights=c(1,2))
+
+influencePlot(modelo_completo)
+plot(cook, type="h",lwd=3,col="red", ylab="Cook's Distance")
+abline(0,0,col="red")
+qqPlot(resid,id = FALSE, ylab="Residuals", main="")
+hist(resid, xlab="Residuals", main="",nclass=30,col="orange")
+```
+
+
+```{r,out.width="100%"}
+layout(matrix(c(1,2,1,2,3,4,3,4), 2, 2, byrow = TRUE),
+       widths=c(2,2), heights=c(1,2))
+
+plot(seq(1,length(modelo_completo$fitted.values)), std_resid, xlab="Predictor", ylab="Std. Residual", main="Predictor vs Residual")
+abline(h=0, col="red", lty=2)
+plot(modelo_completo$fitted.values, std_resid, xlab="Fitted", ylab="Std Resid", main="Fitted Vs Residual")
+qqPlot(std_resid, id = FALSE ,main="QQ Plot Std. Residuals")
+hist(std_resid, main="Histogram of Std. Residuals")
+```
+
+\newpage
+
+Vamos realizar o teste de Breusch-Pagan e de Shapiro para normalidade
+
+```{r}
+shapiro.test(modelo_completo$residuals)
+bptest(modelo_completo)
+```
+
+Os resultados mostram uma melhora significativa na adequação do modelo aso pressupostos da regressao! Contudo ainda podemos melhorar mais ainda removendo as observações extremas (influentes) que podemos notar pelo gráfico da distancia de cook.
+
+```{r}
+cook = cooks.distance(modelo_completo)
+influential <- as.numeric(names(cook)[(cook > 4*mean(cook, na.rm=T))])  # influential row numbers
+
+cat("Observações influentes",influential)
+```
+
+Podemos rodar nosso modelo novamente e ver os resultados.
+
+\newpage
+
+Agora obtemos nosso novo modelo sem observações extremas
+
+```{r}
+train_bc <- train_bc[-influential, ]
+
+modelo_completo = lm(X1~X2+X3+X4+X5+X6+X7+X8+X9+X10+X11,data = train_bc)
+summary(modelo_completo)
+```
+
+\newpage
+
+```{r}
+#Analise de residuo do modelo completo
+
+resid = residuals(modelo_completo)
+cook = cooks.distance(modelo_completo)
+std_resid <- rstandard(modelo_completo)
+```
+
+
+```{r,echo=FALSE, message=FALSE, results='hide'}
+layout(matrix(c(1,2,1,2,3,4,3,4), 2, 2, byrow = TRUE),
+       widths=c(2,2), heights=c(1,2))
+
+influencePlot(modelo_completo)
+plot(cook, type="h",lwd=3,col="red", ylab="Cook's Distance")
+abline(0,0,col="red")
+qqPlot(resid,id = FALSE, ylab="Residuals", main="")
+hist(resid, xlab="Residuals", main="",nclass=30,col="orange")
+```
+
+
+```{r,out.width="100%"}
+layout(matrix(c(1,2,1,2,3,4,3,4), 2, 2, byrow = TRUE),
+       widths=c(2,2), heights=c(1,2))
+
+plot(seq(1,length(modelo_completo$fitted.values)), std_resid, xlab="Predictor", ylab="Std. Residual", main="Predictor vs Residual")
+abline(h=0, col="red", lty=2)
+plot(modelo_completo$fitted.values, std_resid, xlab="Fitted", ylab="Std Resid", main="Fitted Vs Residual")
+qqPlot(std_resid, id = FALSE ,main="QQ Plot Std. Residuals")
+hist(std_resid, main="Histogram of Std. Residuals")
+```
+
+\newpage
+
+Teste de Breusch-Pagan e Shapiro
+
+```{r}
+bptest(modelo_completo)
+shapiro.test(modelo_completo$residuals)
+```
+
+Podemos notar que melhorarmos muito a aderencia a normalidade, apesar de ter tido uma queda no p-valor de teste de Breusch-Pagan. Contudo nao muda pois nao chegamos perto de atingir os 5% necessarios para assumir homocedasticidade.
+
+\newpage
+
+### Modelo Reduzido
+
+Para obter os modelo reduzidos, vamos rodar os algoritmos forward,backward e stepwise para selecao de parametros, assim como obter todas as combinacoes possiveis e ver os melhores subsets de variavies que mantenha a regressao simples e efetiva, ou seja onde o gnaho de se adicionar mais uma variavel nao é tao grande.
+
+```{r}
+#Seleção de variaveis
+
+step <- stepAIC(modelo_completo, direction = "both", trace = FALSE)
+
+forward <- stepAIC(modelo_completo, direction = "forward", trace = FALSE)
+
+backward <- stepAIC(modelo_completo, direction = "backward", trace = FALSE)
+```
+
+
+```{r}
+l<-list(data.frame(t(data.frame(coef(forward)))),
+        data.frame(t(data.frame(coef(backward)))),
+        data.frame(t(data.frame(coef(step)))))
+stepwise_results <- do.call(rbind.fill, l)
+row.names(stepwise_results) <- c('Forward','Backward','Both')
+
+stepwise_results = stepwise_results %>% 
+  dplyr::mutate(X.Intercept. = round(X.Intercept.,2)) %>%
+  dplyr::mutate(X2 = round(X2,3)) %>%
+  dplyr::mutate(X3 = round(X3,3)) %>%
+  dplyr::mutate(X4 = round(X4,3)) %>%
+  dplyr::mutate(X51 = round(X51,3)) %>%
+  dplyr::mutate(X6 = round(X6,3)) %>%
+  dplyr::mutate(X71 = round(X71,3)) %>%
+  dplyr::mutate(X8 = round(X8,3)) %>%
+  dplyr::mutate(X92 = round(X92,3)) %>%
+  dplyr::mutate(X93 = round(X93,3)) %>%
+  dplyr::mutate(X10 = round(X10,3)) %>%
+  dplyr::mutate(X111 = round(X111,3))
+```
+
+
+```{r}
+kable(stepwise_results, "latex", 
+  booktabs = TRUE, 
+  caption = "Tabela do resultado da seleção de variavel e seu coeficiente",
+  label = "kable_tab") %>%
+kable_styling(position = "center", font_size = 9,
+latex_options = "HOLD_position")
+```
+
+Analisando todas as possiveis combinacoes das variaveis presentes no banco
+
+```{r}
+#todas combinações
+
+regfit_full = leaps::regsubsets(X1~X2+X3+X4+X5+X6+X7+X8+X9+X10+X11, data = train_bc, nbest = 1)
+reg_summary = summary(regfit_full)
+
+reg_summary$outmat
+```
+
+Essa tabela nos traz os melhores modelos com 1 até 8 variavies e as respectivas variaveis presentes nesse modelo (marcadas com um *)
+
+```{r}
+# Set up a 2x2 grid so we can look at 4 plots at once
+par(mfrow = c(2,2))
+plot(reg_summary$rss, xlab = "Number of Variables", ylab = "RSS", type = "l")
+plot(reg_summary$adjr2, xlab = "Number of Variables", ylab = "Adjusted RSq", type = "l")
+
+# We will now plot a red dot to indicate the model with the largest adjusted R^2 statistic.
+# The which.max() function can be used to identify the location of the maximum point of a vector
+adj_r2_max = which.max(reg_summary$adjr2) # 11
+
+# The points() command works like the plot() command, except that it puts points 
+# on a plot that has already been created instead of creating a new plot
+points(adj_r2_max, reg_summary$adjr2[adj_r2_max], col ="red", cex = 2, pch = 20)
+
+# We'll do the same for C_p and BIC, this time looking for the models with the SMALLEST statistic
+plot(reg_summary$cp, xlab = "Number of Variables", ylab = "Cp", type = "l")
+cp_min = which.min(reg_summary$cp) # 10
+points(cp_min, reg_summary$cp[cp_min], col = "red", cex = 2, pch = 20)
+
+plot(reg_summary$bic, xlab = "Number of Variables", ylab = "BIC", type = "l")
+bic_min = which.min(reg_summary$bic) # 6
+points(bic_min, reg_summary$bic[bic_min], col = "red", cex = 2, pch = 20)
+
+```
+
+Apartir dos graficos podemos notar que o ganho de explicação do modelo com mais de 5 variavies se torna bem pequena. Indicando que o número ideal e minimo seja 5. Logo nosso modelo reduzido seria:
+
+```{r}
+modelo_reduzido = lm(X1~X2+X8+X9+X10, data = train_bc)
+summary(modelo_reduzido)
+```
+
+Vamos analisar os residuos desse modelo:
+```{r}
+#Analise de residuo do modelo completo
+
+resid = residuals(modelo_reduzido)
+cook = cooks.distance(modelo_reduzido)
+std_resid <- rstandard(modelo_reduzido)
+```
+
+
+```{r,echo=FALSE, message=FALSE, results='hide'}
+layout(matrix(c(1,2,1,2,3,4,3,4), 2, 2, byrow = TRUE),
+       widths=c(2,2), heights=c(1,2))
+
+influencePlot(modelo_reduzido)
+plot(cook, type="h",lwd=3,col="red", ylab="Cook's Distance")
+abline(0,0,col="red")
+qqPlot(resid,id = FALSE, ylab="Residuals", main="")
+hist(resid, xlab="Residuals", main="",nclass=30,col="orange")
+```
+
+
+```{r,out.width="100%"}
+layout(matrix(c(1,2,1,2,3,4,3,4), 2, 2, byrow = TRUE),
+       widths=c(2,2), heights=c(1,2))
+
+plot(seq(1,length(modelo_reduzido$fitted.values)), std_resid, xlab="Predictor", ylab="Std. Residual", main="Predictor vs Residual")
+abline(h=0, col="red", lty=2)
+plot(modelo_reduzido$fitted.values, std_resid, xlab="Fitted", ylab="Std Resid", main="Fitted Vs Residual")
+qqPlot(std_resid, id = FALSE ,main="QQ Plot Std. Residuals")
+hist(std_resid, main="Histogram of Std. Residuals")
+```
+
+\newpage
+
+Teste de Breusch-Pagan e Shapiro
+
+```{r}
+bptest(modelo_completo)
+shapiro.test(modelo_completo$residuals)
+```
+
+### Validação do Modelo
+
+Vamos usar os 2 modelo obtidos e transformados por meio da transformação de Box-Cox para aplicar nos bancos de teste e verificar o Raiz do Erro Quadratico Médio e o Erro Médio Absoluto.
+
+Modelo completo e transformado
+```{r}
+# Make predictions and compute the R2, RMSE and MAE
+predictions <- modelo_completo %>% predict(test_bc)
+data.frame( R2 = R2(predictions, test_bc$X1),
+            REQM = RMSE(predictions, test_bc$X1),
+            EMA = MAE(predictions, test_bc$X1))
+```
+
+```{r}
+cat("Taxa de erro da predição do modelo completo",RMSE(predictions, test_bc$X1)/mean(test_bc$X1))
+```
+
+Modelo Reduzido e transformado
+```{r}
+# Make predictions and compute the R2, RMSE and MAE
+predictions <- modelo_reduzido %>% predict(test_bc)
+data.frame( R2 = R2(predictions, test_bc$X1),
+            REQM = RMSE(predictions, test_bc$X1),
+            EMA = MAE(predictions, test_bc$X1))
+```
+
+```{r}
+cat("Taxa de erro da predição do modelo reduzido",RMSE(predictions, test_bc$X1)/mean(test_bc$X1))
+```
+
+
+Modelo completo original
+```{r}
+modelo_completo = lm(X1~X2+X3+X4+X5+X6+X7+X8+X9+X10+X11,data = train)
+```
+
+```{r}
+
+
+# Make predictions and compute the R2, RMSE and MAE
+predictions <- modelo_completo %>% predict(test)
+data.frame( R2 = R2(predictions, test$X1),
+            REQM = RMSE(predictions, test$X1),
+            EMA = MAE(predictions, test$X1))
+```
+
+```{r}
+cat("Taxa de erro da predição do modelo completo",RMSE(predictions, test_bc$X1)/mean(test_bc$X1))
+```
+
+Podemos perceber que o modelo transformado apresenta um desempenho muito superior ao modelo com as variáveis originais. Isso se deve ao fato dos pressupostos não estarem sendo atendidos, e as transformações ajudam nisso. Os modelos transformados estão com as taxas de erros bem baixas, além de que vale notar que, com 5 variáveis, obtemos um desempenho muito parecido com o modelo completo. Em outras palavras, podemos simplificar e obter um resultado praticamente igual.
+
+\newpage
+
+# Conclusão
+
+Podemos concluir que a regressão ajustada usando os dados originais não atende aos pressupostos de uma regressão, e isso causa diversos problemas na predição do modelo, que foi mostrado nos resultados de validação. Logo, foi necessário buscar uma transformação que aproxime os dados para a normalidade, melhorando assim a aderência dos dados aos pressupostos. Para isso, foi feita a transformação de Box-Cox, que busca, por meio da máxima verossimilhança, o valor de lambda ideal que mais aproxima o modelo da normalidade. Uma vez obtido esse lambda e transformados os dados, foi notada uma grande melhora no modelo, apesar de ainda não aceitar o pressuposto de variância constante, que foi o maior problema observado nos modelos. Apesar disso, conseguimos mostrar que o modelo apresenta um bom desempenho e que ele pode ser reduzido para apenas 5 parâmetros (4 variáveis, sendo uma delas categórica com 3 níveis), mantendo o desempenho muito próximo do modelo completo.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
